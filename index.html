@@ -27,7 +27,7 @@
       min-height: 100vh;
     }
 
-    /* Navbar */
+    /* Navbar Header */
     header {
       background-color: #fff;
       padding: 15px 30px;
@@ -69,6 +69,7 @@
       width: 100%;
       margin: 20px auto;
       padding: 0 20px;
+      padding-bottom: 80px;
     }
 
     /* Delivery / Pickup Toggle */
@@ -193,7 +194,7 @@
     }
 
     .form-group {
-      margin-bottom: 12px;
+      margin-bottom: 15px;
     }
 
     .form-group label {
@@ -205,9 +206,14 @@
 
     .form-group input, .form-group textarea {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
     }
 
     .admin-btn {
@@ -228,7 +234,6 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      margin-left: 10px;
     }
 
     .admin-table {
@@ -239,7 +244,7 @@
 
     .admin-table th, .admin-table td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 10px;
       text-align: left;
       font-size: 0.9rem;
     }
@@ -248,12 +253,12 @@
       background: #dc3545;
       color: white;
       border: none;
-      padding: 5px 10px;
+      padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
     }
 
-    /* Bottom Bar */
+    /* Floating Cart Bar */
     .cart-bar {
       position: fixed;
       bottom: 0;
@@ -265,6 +270,7 @@
       text-align: center;
       font-weight: bold;
       cursor: pointer;
+      z-index: 100;
     }
   </style>
 </head>
@@ -289,7 +295,7 @@
 
       <h2 class="section-title">NUMO MENU</h2>
       <div class="menu-grid" id="menu-container">
-        <!-- Dynamic Cards -->
+        <!-- Dynamic food items render here -->
       </div>
     </div>
 
@@ -299,23 +305,25 @@
       <br>
       <form id="add-item-form">
         <div class="form-group">
-          <label>Item Name</label>
+          <label for="item-name">Item Name</label>
           <input type="text" id="item-name" required placeholder="e.g., Giant Sandwich">
         </div>
         <div class="form-group">
-          <label>Price (KD)</label>
+          <label for="item-price">Price (KD)</label>
           <input type="number" step="0.001" id="item-price" required placeholder="e.g., 2.000">
         </div>
         <div class="form-group">
-          <label>Upload Dish Image</label>
+          <label for="item-file">Upload Dish Image (From Phone/Computer)</label>
           <input type="file" id="item-file" accept="image/*">
         </div>
         <div class="form-group">
-          <label>Description (Optional)</label>
+          <label for="item-desc">Description (Optional)</label>
           <textarea id="item-desc" rows="2" placeholder="Brief details about the dish..."></textarea>
         </div>
-        <button type="submit" class="admin-btn">Add Dish to Menu</button>
-        <button type="button" class="reset-btn" onclick="resetToDefaults()">Reset Default Menu</button>
+        <div class="button-group">
+          <button type="submit" class="admin-btn">Add Dish to Menu</button>
+          <button type="button" class="reset-btn" onclick="resetToDefaults()">Clear & Reset Menu</button>
+        </div>
       </form>
 
       <h3 style="margin-top: 30px;">Current Menu Items</h3>
@@ -329,7 +337,7 @@
           </tr>
         </thead>
         <tbody id="admin-item-list">
-          <!-- Items populated here -->
+          <!-- Item rows render here -->
         </tbody>
       </table>
     </div>
@@ -341,7 +349,7 @@
   </div>
 
   <script>
-    // Lightweight local SVG placeholder (No network request needed)
+    // Fast inline SVG placeholder image (zero network requests)
     const localSvgPlaceholder = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'><rect width='100%' height='100%' fill='%23dbe2ef'/><text x='50%' y='50%' font-size='16' fill='%233f72af' font-family='sans-serif' text-anchor='middle' dominant-baseline='middle'>Numo Dish Image</text></svg>";
 
     const defaultMenu = [
@@ -377,28 +385,31 @@
 
     let cartCount = 0;
 
+    // Load Items from LocalStorage
     function getStoredMenu() {
-      const stored = localStorage.getItem('numo_v2_menu');
+      const stored = localStorage.getItem('numo_v3_menu');
       if (stored) {
         return JSON.parse(stored);
       } else {
-        localStorage.setItem('numo_v2_menu', JSON.stringify(defaultMenu));
+        localStorage.setItem('numo_v3_menu', JSON.stringify(defaultMenu));
         return defaultMenu;
       }
     }
 
     function saveMenu(menu) {
-      localStorage.setItem('numo_v2_menu', JSON.stringify(menu));
+      localStorage.setItem('numo_v3_menu', JSON.stringify(menu));
       renderMenu();
       renderAdminTable();
     }
 
     function resetToDefaults() {
-      localStorage.removeItem('numo_v2_menu');
-      saveMenu(defaultMenu);
-      alert('Menu reset to defaults!');
+      if(confirm('Are you sure you want to reset the menu to defaults?')) {
+        localStorage.removeItem('numo_v3_menu');
+        saveMenu(defaultMenu);
+      }
     }
 
+    // Render Menu Cards to Customer Screen
     function renderMenu() {
       const menu = getStoredMenu();
       const container = document.getElementById('menu-container');
@@ -424,6 +435,7 @@
       });
     }
 
+    // Render Items to Admin Table
     function renderAdminTable() {
       const menu = getStoredMenu();
       const tbody = document.getElementById('admin-item-list');
@@ -443,6 +455,7 @@
       });
     }
 
+    // Convert local file to Base64 String
     function convertFileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -452,6 +465,7 @@
       });
     }
 
+    // Handle Form Submit
     document.getElementById('add-item-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -459,7 +473,12 @@
       let imageBase64 = localSvgPlaceholder;
 
       if (fileInput.files.length > 0) {
-        imageBase64 = await convertFileToBase64(fileInput.files[0]);
+        try {
+          imageBase64 = await convertFileToBase64(fileInput.files[0]);
+        } catch (error) {
+          alert('Error loading image file. Please try another image.');
+          return;
+        }
       }
 
       const menu = getStoredMenu();
@@ -478,17 +497,20 @@
       alert('Dish added successfully!');
     });
 
+    // Delete Item
     function deleteItem(id) {
       let menu = getStoredMenu();
       menu = menu.filter(item => item.id !== id);
       saveMenu(menu);
     }
 
+    // Simple Cart Counter
     function addToCart() {
       cartCount++;
       document.getElementById('cart-count').innerText = cartCount;
     }
 
+    // Navigation Switcher
     function showView(view) {
       const customerView = document.getElementById('customer-view');
       const adminView = document.getElementById('admin-view');
@@ -508,6 +530,7 @@
       }
     }
 
+    // Initialize App
     renderMenu();
     renderAdminTable();
   </script>
