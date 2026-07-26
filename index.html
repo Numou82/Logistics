@@ -1,1 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Food Ordering System</title>
+  <style>
+    :root {
+      --primary-color: #0022d6;
+      --bg-color: #f4f5f7;
+      --card-bg: #ffffff;
+      --text-color: #222;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Navbar */
+    header {
+      background-color: #fff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .nav-actions button {
+      padding: 8px 16px;
+      margin-left: 10px;
+      border: 1px solid var(--primary-color);
+      background: white;
+      color: var(--primary-color);
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .nav-actions button:hover, .nav-actions button.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    /* Delivery / Pickup Toggle */
+    .service-type {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .service-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .service-btn.active {
+      background: white;
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    /* Menu Grid */
+    .section-title {
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .food-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s;
+    }
+
+    .food-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .food-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      background-color: #eee;
+    }
+
+    .food-info {
+      padding: 12px;
+      flex-grow: 1;
+    }
+
+    .food-name {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .food-desc {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .food-price {
+      font-weight: bold;
+      color: var(--primary-color);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+
+    .add-btn {
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .add-btn:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    /* Admin Panel Styling */
+    .admin-panel {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .admin-btn {
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .admin-table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    .admin-table th, .admin-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .action-btn-danger {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Bottom Bar */
+    .cart-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--primary-color);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">Naif Chicken Restaurant</div>
+    <div class="nav-actions">
+      <button id="view-customer-btn" class="active" onclick="showView('customer')">Menu View</button>
+      <button id="view-admin-btn" onclick="showView('admin')">Admin Panel</button>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- CUSTOMER VIEW -->
+    <div id="customer-view">
+      <div class="service-type">
+        <button class="service-btn active">Delivery</button>
+        <button class="service-btn">Pickup</button>
+      </div>
+
+      <h2 class="section-title">NAIF NEW</h2>
+      <div class="menu-grid" id="menu-container">
+        <!-- Menu cards dynamically added here -->
+      </div>
+    </div>
+
+    <!-- ADMIN VIEW -->
+    <div id="admin-view" class="admin-panel">
+      <h2>Admin Dashboard - Manage Menu Items</h2>
+      <br>
+      <form id="add-item-form">
+        <div class="form-group">
+          <label>Item Name</label>
+          <input type="text" id="item-name" required placeholder="e.g., Giant Sandwich">
+        </div>
+        <div class="form-group">
+          <label>Price (KD)</label>
+          <input type="number" step="0.001" id="item-price" required placeholder="e.g., 2.000">
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="url" id="item-image" required placeholder="https://example.com/image.jpg">
+        </div>
+        <div class="form-group">
+          <label>Description (Optional)</label>
+          <textarea id="item-desc" rows="2" placeholder="Brief details about the dish..."></textarea>
+        </div>
+        <button type="submit" class="admin-btn">Add / Update Item</button>
+      </form>
+
+      <h3 style="margin-top: 30px;">Current Menu Items</h3>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-item-list">
+          <!-- Items will be populated here -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="cart-bar" id="cart-bar">
+    Select your location / Checkout (<span id="cart-count">0</span> items)
+  </div>
+
+  <script>
+    // Initial Default Data matching your image
+    const defaultMenu = [
+      {
+        id: 1,
+        name: "Giant Meal",
+        price: 2.950,
+        image: "https://via.placeholder.com/200x150?text=Giant+Meal",
+        description: "Served with crispy fries and beverage."
+      },
+      {
+        id: 2,
+        name: "Giant Sandwich",
+        price: 2.000,
+        image: "https://via.placeholder.com/200x150?text=Giant+Sandwich",
+        description: "Large crispy chicken sandwich with cheese & jalapeno."
+      },
+      {
+        id: 3,
+        name: "Single Crispy Quesadilla Meal",
+        price: 2.000,
+        image: "https://via.placeholder.com/200x150?text=Quesadilla+Meal",
+        description: "Grilled quesadilla served with fries."
+      },
+      {
+        id: 4,
+        name: "Single Crispy Quesadilla",
+        price: 1.250,
+        image: "https://via.placeholder.com/200x150?text=Quesadilla",
+        description: "Single piece crispy quesadilla."
+      }
+    ];
+
+    let cartCount = 0;
+
+    // Load Items from LocalStorage or Set Defaults
+    function getStoredMenu() {
+      const stored = localStorage.getItem('restaurant_menu');
+      if (stored) {
+        return JSON.parse(stored);
+      } else {
+        localStorage.setItem('restaurant_menu', JSON.stringify(defaultMenu));
+        return defaultMenu;
+      }
+    }
+
+    function saveMenu(menu) {
+      localStorage.setItem('restaurant_menu', JSON.stringify(menu));
+      renderMenu();
+      renderAdminTable();
+    }
+
+    // Render Menu to Customer Screen
+    function renderMenu() {
+      const menu = getStoredMenu();
+      const container = document.getElementById('menu-container');
+      container.innerHTML = '';
+
+      menu.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'food-card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/200x150?text=No+Image'">
+          <div class="food-info">
+            <div class="food-name">${item.name}</div>
+            <div class="food-desc">${item.description || ''}</div>
+            <div class="food-price">${parseFloat(item.price).toFixed(3)} KD</div>
+          </div>
+          <div style="padding: 12px; pt-0;">
+            <button class="add-btn" onclick="addToCart()">+ Add</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Render Items to Admin Table
+    function renderAdminTable() {
+      const menu = getStoredMenu();
+      const tbody = document.getElementById('admin-item-list');
+      tbody.innerHTML = '';
+
+      menu.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img src="${item.image}" style="width: 50px; height: 40px; object-fit: cover;"></td>
+          <td>${item.name}</td>
+          <td>${parseFloat(item.price).toFixed(3)} KD</td>
+          <td>
+            <button class="action-btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Handle Adding New Items (Admin)
+    document.getElementById('add-item-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const menu = getStoredMenu();
+      
+      const newItem = {
+        id: Date.now(),
+        name: document.getElementById('item-name').value,
+        price: parseFloat(document.getElementById('item-price').value),
+        image: document.getElementById('item-image').value,
+        description: document.getElementById('item-desc').value
+      };
+
+      menu.push(newItem);
+      saveMenu(menu);
+
+      // Reset form
+      this.reset();
+      alert('Item added successfully!');
+    });
+
+    // Delete Item (Admin)
+    function deleteItem(id) {
+      let menu = getStoredMenu();
+      menu = menu.filter(item => item.id !== id);
+      saveMenu(menu);
+    }
+
+    // Cart Helper
+    function addToCart() {
+      cartCount++;
+      document.getElementById('cart-count').innerText = cartCount;
+    }
+
+    // Switch between Admin & Customer views
+    function showView(view) {
+      const customerView = document.getElementById('customer-view');
+      const adminView = document.getElementById('admin-view');
+      const customerBtn = document.getElementById('view-customer-btn');
+      const adminBtn = document.getElementById('view-admin-btn');
+
+      if (view === 'admin') {
+        customerView.style.display = 'none';
+        adminView.style.display = 'block';
+        adminBtn.classList.add('active');
+        customerBtn.classList.remove('active');
+      } else {
+        customerView.style.display = 'block';
+        adminView.style.display = 'none';
+        customerBtn.classList.add('active');
+        adminBtn.classList.remove('active');
+      }
+    }
+
+    // Initialize Page
+    renderMenu();
+    renderAdminTable();
+  </script>
+</body>
+</html>
