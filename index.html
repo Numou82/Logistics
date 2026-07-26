@@ -27,7 +27,7 @@
       min-height: 100vh;
     }
 
-    /* Navbar Header */
+    /* Navbar */
     header {
       background-color: #fff;
       padding: 15px 30px;
@@ -63,13 +63,38 @@
       color: white;
     }
 
-    /* Main Container */
+    /* Location Bar */
+    .location-header {
+      background: white;
+      padding: 12px 30px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .location-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .change-loc-btn {
+      color: var(--primary-color);
+      font-size: 0.85rem;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    /* Container */
     .container {
       max-width: 1200px;
       width: 100%;
       margin: 20px auto;
-      padding: 0 20px;
-      padding-bottom: 80px;
+      padding: 0 20px 80px 20px;
     }
 
     /* Delivery / Pickup Toggle */
@@ -183,7 +208,7 @@
       color: white;
     }
 
-    /* Admin Panel Styling */
+    /* Admin Panel */
     .admin-panel {
       display: none;
       background: white;
@@ -204,7 +229,7 @@
       font-size: 0.9rem;
     }
 
-    .form-group input, .form-group textarea {
+    .form-group input, .form-group textarea, .form-group select {
       width: 100%;
       padding: 10px;
       border: 1px solid #ccc;
@@ -258,7 +283,149 @@
       cursor: pointer;
     }
 
-    /* Floating Cart Bar */
+    /* MODAL BASE */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: white;
+      width: 90%;
+      max-width: 500px;
+      max-height: 85vh;
+      border-radius: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .modal-close {
+      cursor: pointer;
+      font-size: 1.4rem;
+      background: none;
+      border: none;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    /* LOCATION MODAL STYLES */
+    .search-box {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    .governate-accordion {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .governate-title {
+      padding: 12px 15px;
+      background: #f9f9f9;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .governate-title:hover {
+      background: #f0f0f0;
+    }
+
+    .area-list {
+      display: none;
+      padding: 5px 0;
+      background: white;
+    }
+
+    .area-list.open {
+      display: block;
+    }
+
+    .area-item {
+      padding: 10px 25px;
+      cursor: pointer;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 0.9rem;
+    }
+
+    .area-item:hover {
+      background: #f0f4ff;
+      color: var(--primary-color);
+    }
+
+    /* CART & CHECKOUT STYLES */
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-btn {
+      width: 25px;
+      height: 25px;
+      border: 1px solid var(--primary-color);
+      background: white;
+      color: var(--primary-color);
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .payment-option input {
+      cursor: pointer;
+    }
+
+    /* Bottom Floating Cart Bar */
     .cart-bar {
       position: fixed;
       bottom: 0;
@@ -266,8 +433,10 @@
       right: 0;
       background: var(--primary-color);
       color: white;
-      padding: 15px;
-      text-align: center;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       font-weight: bold;
       cursor: pointer;
       z-index: 100;
@@ -276,6 +445,7 @@
 </head>
 <body>
 
+  <!-- NAVBAR -->
   <header>
     <div class="brand-title">Numo Now</div>
     <div class="nav-actions">
@@ -283,6 +453,14 @@
       <button id="view-admin-btn" onclick="showView('admin')">Admin Panel</button>
     </div>
   </header>
+
+  <!-- LOCATION BANNER -->
+  <div class="location-header" onclick="openLocationModal()">
+    <div class="location-info">
+      📍 Delivering to: <span id="current-location-text">Select your area in Kuwait</span>
+    </div>
+    <div class="change-loc-btn">Change</div>
+  </div>
 
   <div class="container">
     
@@ -313,7 +491,7 @@
           <input type="number" step="0.001" id="item-price" required placeholder="e.g., 2.000">
         </div>
         <div class="form-group">
-          <label for="item-file">Upload Dish Image (From Phone/Computer)</label>
+          <label for="item-file">Upload Dish Image</label>
           <input type="file" id="item-file" accept="image/*">
         </div>
         <div class="form-group">
@@ -344,72 +522,128 @@
 
   </div>
 
-  <div class="cart-bar" id="cart-bar">
-    Select your location / Checkout (<span id="cart-count">0</span> items)
+  <!-- FLOATING CART BAR -->
+  <div class="cart-bar" id="cart-bar" onclick="openCartModal()">
+    <span>Checkout (<span id="cart-count">0</span> items)</span>
+    <span>Total: <span id="cart-total">0.000</span> KD</span>
+  </div>
+
+  <!-- LOCATION SELECTOR MODAL -->
+  <div class="modal-overlay" id="location-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>Location</span>
+        <button class="modal-close" onclick="closeLocationModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="search-box" id="area-search" placeholder="🔍 Search area name..." oninput="filterAreas()">
+        <div id="governate-container">
+          <!-- Kuwait Governorates & Areas render here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT / CART MODAL -->
+  <div class="modal-overlay" id="cart-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>Your Order Basket</span>
+        <button class="modal-close" onclick="closeCartModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="cart-items-container">
+          <!-- Cart items list -->
+        </div>
+        <hr style="margin: 15px 0;">
+        <h3>Select Payment Method</h3>
+        <br>
+        <label class="payment-option">
+          <input type="radio" name="payment" value="KNET" checked>
+          <span>💳 Online Payment (K-NET / Credit Card)</span>
+        </label>
+        <label class="payment-option">
+          <input type="radio" name="payment" value="COD">
+          <span>💵 Cash on Delivery</span>
+        </label>
+        
+        <br>
+        <div class="form-group">
+          <label>Delivery Address Details</label>
+          <input type="text" id="cust-street" placeholder="Block, Street, House/Building No." required>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="cust-phone" placeholder="e.g., 99887766" required>
+        </div>
+
+        <button class="admin-btn" style="width: 100%; margin-top: 15px;" onclick="placeOrder()">Place Order Now</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Fast inline SVG placeholder image (zero network requests)
-    const localSvgPlaceholder = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'><rect width='100%' height='100%' fill='%23dbe2ef'/><text x='50%' y='50%' font-size='16' fill='%233f72af' font-family='sans-serif' text-anchor='middle' dominant-baseline='middle'>Numo Dish Image</text></svg>";
-
-    const defaultMenu = [
+    // KUWAIT GOVERNORATES & AREAS DATA
+    const kuwaitData = [
       {
-        id: 1,
-        name: "Giant Meal",
-        price: 2.950,
-        image: localSvgPlaceholder,
-        description: "Served with crispy fries and beverage."
+        governate: "Mubarak Al-Kabeer",
+        areas: ["Abu Fatira", "Abu Hasaniya", "Adan", "Fintas", "Mubarak Al-Kabeer", "Qurain", "Sabah Al-Salem"]
       },
       {
-        id: 2,
-        name: "Giant Sandwich",
-        price: 2.000,
-        image: localSvgPlaceholder,
-        description: "Large crispy chicken sandwich with cheese & jalapeno."
+        governate: "Ahmadi",
+        areas: ["Ahmadi", "Egaila", "Fahaheel", "Fahaheel Port", "Mahboula", "Mangaf", "Sabah Al-Ahmad", "Wafra"]
       },
       {
-        id: 3,
-        name: "Single Crispy Quesadilla Meal",
-        price: 2.000,
-        image: localSvgPlaceholder,
-        description: "Grilled quesadilla served with fries."
+        governate: "Farwaniya",
+        areas: ["Abbasiya", "Ardiya", "Farwaniya", "Jleeb Al-Shuyoukh", "Khaitan", "Riggai", "Sabah Al-Nasser"]
       },
       {
-        id: 4,
-        name: "Single Crispy Quesadilla",
-        price: 1.250,
-        image: localSvgPlaceholder,
-        description: "Single piece crispy quesadilla."
+        governate: "Hawalli",
+        areas: ["Bayan", "Hawalli", "Jabriya", "Mishref", "Salmiya", "Salwa", "Shaab"]
+      },
+      {
+        governate: "Jahra",
+        areas: ["Amghara", "Jahra", "Naeem", "Naseem", "Oula", "Saad Al-Abdullah", "Sulaibiya"]
+      },
+      {
+        governate: "Kuwait City",
+        areas: ["Abdullah Al-Salem", "Bneid Al-Gar", "Dasma", "Dasmah", "Kaifan", "Mirqab", "Nuzha", "Sharq", "Shuwaikh"]
       }
     ];
 
-    let cartCount = 0;
+    // Placeholder image
+    const localSvgPlaceholder = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'><rect width='100%' height='100%' fill='%23dbe2ef'/><text x='50%' y='50%' font-size='16' fill='%233f72af' font-family='sans-serif' text-anchor='middle' dominant-baseline='middle'>Numo Dish Image</text></svg>";
 
-    // Load Items from LocalStorage
+    const defaultMenu = [
+      { id: 1, name: "Giant Meal", price: 2.950, image: localSvgPlaceholder, description: "Served with crispy fries and beverage." },
+      { id: 2, name: "Giant Sandwich", price: 2.000, image: localSvgPlaceholder, description: "Large crispy chicken sandwich with cheese & jalapeno." },
+      { id: 3, name: "Single Crispy Quesadilla Meal", price: 2.000, image: localSvgPlaceholder, description: "Grilled quesadilla served with fries." },
+      { id: 4, name: "Single Crispy Quesadilla", price: 1.250, image: localSvgPlaceholder, description: "Single piece crispy quesadilla." }
+    ];
+
+    let cart = {};
+    let selectedLocation = "";
+
+    // Load & Save Menu
     function getStoredMenu() {
-      const stored = localStorage.getItem('numo_v3_menu');
-      if (stored) {
-        return JSON.parse(stored);
-      } else {
-        localStorage.setItem('numo_v3_menu', JSON.stringify(defaultMenu));
-        return defaultMenu;
-      }
+      const stored = localStorage.getItem('numo_v4_menu');
+      return stored ? JSON.parse(stored) : defaultMenu;
     }
 
     function saveMenu(menu) {
-      localStorage.setItem('numo_v3_menu', JSON.stringify(menu));
+      localStorage.setItem('numo_v4_menu', JSON.stringify(menu));
       renderMenu();
       renderAdminTable();
     }
 
     function resetToDefaults() {
-      if(confirm('Are you sure you want to reset the menu to defaults?')) {
-        localStorage.removeItem('numo_v3_menu');
+      if(confirm('Are you sure you want to reset the menu?')) {
+        localStorage.removeItem('numo_v4_menu');
         saveMenu(defaultMenu);
       }
     }
 
-    // Render Menu Cards to Customer Screen
+    // Render Food Cards
     function renderMenu() {
       const menu = getStoredMenu();
       const container = document.getElementById('menu-container');
@@ -428,14 +662,169 @@
             <div class="food-price">${parseFloat(item.price).toFixed(3)} KD</div>
           </div>
           <div style="padding: 12px; padding-top: 0;">
-            <button class="add-btn" onclick="addToCart()">+ Add</button>
+            <button class="add-btn" onclick="addToCart(${item.id})">+ Add</button>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
-    // Render Items to Admin Table
+    // Cart Handlers
+    function addToCart(itemId) {
+      const menu = getStoredMenu();
+      const item = menu.find(i => i.id === itemId);
+      if (!item) return;
+
+      if (cart[itemId]) {
+        cart[itemId].qty++;
+      } else {
+        cart[itemId] = { ...item, qty: 1 };
+      }
+      updateCartUI();
+    }
+
+    function changeQty(itemId, delta) {
+      if (cart[itemId]) {
+        cart[itemId].qty += delta;
+        if (cart[itemId].qty <= 0) {
+          delete cart[itemId];
+        }
+      }
+      updateCartUI();
+      renderCartItems();
+    }
+
+    function updateCartUI() {
+      let count = 0;
+      let total = 0;
+      Object.values(cart).forEach(i => {
+        count += i.qty;
+        total += i.price * i.qty;
+      });
+      document.getElementById('cart-count').innerText = count;
+      document.getElementById('cart-total').innerText = total.toFixed(3);
+    }
+
+    // Location Modal Render
+    function renderLocations() {
+      const container = document.getElementById('governate-container');
+      container.innerHTML = '';
+
+      kuwaitData.forEach((gov, index) => {
+        const accordion = document.createElement('div');
+        accordion.className = 'governate-accordion';
+        accordion.innerHTML = `
+          <div class="governate-title" onclick="toggleAccordion(${index})">
+            <span>${gov.governate}</span>
+            <span>▼</span>
+          </div>
+          <div class="area-list" id="gov-${index}">
+            ${gov.areas.map(area => `<div class="area-item" onclick="selectLocation('${area}', '${gov.governate}')">${area}</div>`).join('')}
+          </div>
+        `;
+        container.appendChild(accordion);
+      });
+    }
+
+    function toggleAccordion(index) {
+      const el = document.getElementById(`gov-${index}`);
+      el.classList.toggle('open');
+    }
+
+    function filterAreas() {
+      const query = document.getElementById('area-search').value.toLowerCase();
+      kuwaitData.forEach((gov, index) => {
+        const list = document.getElementById(`gov-${index}`);
+        const areaItems = list.getElementsByClassName('area-item');
+        let hasMatch = false;
+
+        for (let item of areaItems) {
+          if (item.innerText.toLowerCase().includes(query)) {
+            item.style.display = 'block';
+            hasMatch = true;
+          } else {
+            item.style.display = 'none';
+          }
+        }
+
+        if (query.length > 0 && hasMatch) {
+          list.classList.add('open');
+        } else if (query.length === 0) {
+          list.classList.remove('open');
+        }
+      });
+    }
+
+    function selectLocation(area, governate) {
+      selectedLocation = `${area}, ${governate}`;
+      document.getElementById('current-location-text').innerText = selectedLocation;
+      closeLocationModal();
+    }
+
+    // Modal Toggles
+    function openLocationModal() { document.getElementById('location-modal').classList.add('active'); }
+    function closeLocationModal() { document.getElementById('location-modal').classList.remove('active'); }
+    function openCartModal() { 
+      renderCartItems();
+      document.getElementById('cart-modal').classList.add('active'); 
+    }
+    function closeCartModal() { document.getElementById('cart-modal').classList.remove('active'); }
+
+    function renderCartItems() {
+      const container = document.getElementById('cart-items-container');
+      container.innerHTML = '';
+      const items = Object.values(cart);
+
+      if (items.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#888;">Your basket is empty.</p>';
+        return;
+      }
+
+      items.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <div>
+            <strong>${item.name}</strong><br>
+            <small>${parseFloat(item.price).toFixed(3)} KD</small>
+          </div>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+            <span>${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function placeOrder() {
+      if (Object.keys(cart).length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      if (!selectedLocation) {
+        alert("Please select your delivery area first!");
+        openLocationModal();
+        return;
+      }
+
+      const street = document.getElementById('cust-street').value;
+      const phone = document.getElementById('cust-phone').value;
+      const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+      if (!street || !phone) {
+        alert("Please enter your street address and phone number.");
+        return;
+      }
+
+      alert(`✅ Order Placed Successfully!\n\nArea: ${selectedLocation}\nAddress: ${street}\nPhone: ${phone}\nPayment: ${paymentMethod}`);
+      cart = {};
+      updateCartUI();
+      closeCartModal();
+    }
+
+    // Admin Helpers
     function renderAdminTable() {
       const menu = getStoredMenu();
       const tbody = document.getElementById('admin-item-list');
@@ -447,15 +836,12 @@
           <td><img src="${item.image || localSvgPlaceholder}" style="width: 50px; height: 40px; object-fit: cover; border-radius: 4px;"></td>
           <td>${item.name}</td>
           <td>${parseFloat(item.price).toFixed(3)} KD</td>
-          <td>
-            <button class="action-btn-danger" onclick="deleteItem(${item.id})">Delete</button>
-          </td>
+          <td><button class="action-btn-danger" onclick="deleteItem(${item.id})">Delete</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // Convert local file to Base64 String
     function convertFileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -465,74 +851,46 @@
       });
     }
 
-    // Handle Form Submit
     document.getElementById('add-item-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      
       const fileInput = document.getElementById('item-file');
       let imageBase64 = localSvgPlaceholder;
 
       if (fileInput.files.length > 0) {
-        try {
-          imageBase64 = await convertFileToBase64(fileInput.files[0]);
-        } catch (error) {
-          alert('Error loading image file. Please try another image.');
-          return;
-        }
+        imageBase64 = await convertFileToBase64(fileInput.files[0]);
       }
 
       const menu = getStoredMenu();
-      const newItem = {
+      menu.push({
         id: Date.now(),
         name: document.getElementById('item-name').value,
         price: parseFloat(document.getElementById('item-price').value),
         image: imageBase64,
         description: document.getElementById('item-desc').value
-      };
+      });
 
-      menu.push(newItem);
       saveMenu(menu);
-
       this.reset();
       alert('Dish added successfully!');
     });
 
-    // Delete Item
     function deleteItem(id) {
       let menu = getStoredMenu();
       menu = menu.filter(item => item.id !== id);
       saveMenu(menu);
     }
 
-    // Simple Cart Counter
-    function addToCart() {
-      cartCount++;
-      document.getElementById('cart-count').innerText = cartCount;
-    }
-
-    // Navigation Switcher
     function showView(view) {
-      const customerView = document.getElementById('customer-view');
-      const adminView = document.getElementById('admin-view');
-      const customerBtn = document.getElementById('view-customer-btn');
-      const adminBtn = document.getElementById('view-admin-btn');
-
-      if (view === 'admin') {
-        customerView.style.display = 'none';
-        adminView.style.display = 'block';
-        adminBtn.classList.add('active');
-        customerBtn.classList.remove('active');
-      } else {
-        customerView.style.display = 'block';
-        adminView.style.display = 'none';
-        customerBtn.classList.add('active');
-        adminBtn.classList.remove('active');
-      }
+      document.getElementById('customer-view').style.display = view === 'admin' ? 'none' : 'block';
+      document.getElementById('admin-view').style.display = view === 'admin' ? 'block' : 'none';
+      document.getElementById('view-customer-btn').classList.toggle('active', view === 'customer');
+      document.getElementById('view-admin-btn').classList.toggle('active', view === 'admin');
     }
 
-    // Initialize App
+    // Initialize
     renderMenu();
     renderAdminTable();
+    renderLocations();
   </script>
 </body>
 </html>
