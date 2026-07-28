@@ -2,236 +2,289 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fresh Diet - Sticker & Barcode Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Fresh Diet Logistics Platform</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- JSBarcode Library -->
+  <!-- Barcode Generator Library -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <!-- html2pdf Library for PDF Download -->
+  <!-- HTML5 Camera Barcode Scanner -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <!-- PDF Generator -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-6">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-20">
 
-  <!-- HEADER -->
-  <header class="max-w-6xl mx-auto flex justify-between items-center mb-8 pb-4 border-b border-slate-800">
-    <div>
-      <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-        <i data-lucide="qr-code" class="text-emerald-400"></i> Sticker & Barcode Generator
-      </h1>
-      <p class="text-sm text-slate-400">Import subscriptions, generate unique box barcodes, and download printable stickers.</p>
+  <!-- TOP APP HEADER WITH NAVIGATION -->
+  <header class="sticky top-0 z-30 bg-slate-800/90 backdrop-blur-md border-b border-slate-700 px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center font-bold text-slate-950">
+        FD
+      </div>
+      <h1 class="font-bold text-lg text-white">FreshDiet Logistics</h1>
     </div>
-    <button onclick="downloadStickerPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-xl shadow flex items-center gap-2 transition">
-      <i data-lucide="download" class="w-4 h-4"></i> Download Sticker Sheet (PDF)
-    </button>
+    
+    <!-- NAVIGATION TABS -->
+    <nav class="flex bg-slate-900 p-1 rounded-xl border border-slate-700 text-xs font-semibold">
+      <button onclick="switchTab('stickers')" id="tab-stickers" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition">
+        1. Stickers
+      </button>
+      <button onclick="switchTab('driver')" id="tab-driver" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+        2. Driver Portal
+      </button>
+    </nav>
   </header>
 
-  <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <main class="max-w-5xl mx-auto p-4">
 
-    <!-- LEFT COLUMN: SUBSCRIPTION INPUT -->
-    <section class="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4 h-fit">
-      <h2 class="font-bold text-lg text-slate-100 flex items-center gap-2">
-        <i data-lucide="upload-cloud" class="w-5 h-5 text-emerald-400"></i> Subscription Input
-      </h2>
-
-      <!-- FILE UPLOAD -->
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">Upload CSV / Json File</label>
-        <input type="file" id="file-input" accept=".csv, .json" onchange="handleFileUpload(event)" class="block w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-emerald-400 hover:file:bg-slate-600 cursor-pointer bg-slate-900 rounded-xl border border-slate-700 p-1">
-      </div>
-
-      <div class="relative flex py-1 items-center">
-        <div class="flex-grow border-t border-slate-700"></div>
-        <span class="flex-shrink mx-3 text-xs text-slate-500 uppercase font-semibold">or Quick Add</span>
-        <div class="flex-grow border-t border-slate-700"></div>
-      </div>
-
-      <!-- MANUAL ENTRY FORM -->
-      <form id="add-form" onsubmit="addCustomerManual(event)" class="space-y-3">
+    <!-- ========================================== -->
+    <!-- SECTION 1: SUBSCRIPTION STICKER GENERATOR -->
+    <!-- ========================================== -->
+    <section id="view-stickers" class="space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-800 p-4 rounded-2xl border border-slate-700">
         <div>
-          <label class="block text-xs font-semibold text-slate-300">Customer Name</label>
-          <input type="text" id="cust-name" required placeholder="e.g. Fatima Al-Ahmad" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="qr-code" class="text-emerald-400"></i> Sticker & Barcode Generator
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Generate customer stickers with barcodes to attach to boxes before dispatch.</p>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300">Mobile No</label>
-            <input type="text" id="cust-phone" required placeholder="+965 9000 0000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300">Customer ID</label>
-            <input type="text" id="cust-id" required placeholder="SUB-881" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-300">Address</label>
-          <input type="text" id="cust-address" required placeholder="Block 2, St 5, House 12, Hawally" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-300">Dietary / Delivery Notes</label>
-          <textarea id="cust-notes" rows="2" placeholder="Low carb / Leave at main door" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"></textarea>
-        </div>
-        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition">
-          + Add to Sticker Sheet
+        <button onclick="downloadStickerPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition">
+          <i data-lucide="download" class="w-4 h-4"></i> Download Stickers PDF
         </button>
-      </form>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- MANUAL SUBSCRIPTION ENTRY FORM -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-3 h-fit">
+          <h3 class="font-bold text-sm text-slate-200">Add Subscription</h3>
+          <form onsubmit="addSubscription(event)" class="space-y-2.5 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300">Customer Name</label>
+              <input type="text" id="cust-name" required placeholder="Sara Al-Kuwaiti" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block font-semibold text-slate-300">Mobile No</label>
+                <input type="text" id="cust-phone" required placeholder="+965 9988 7766" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-300">Customer ID</label>
+                <input type="text" id="cust-id" required placeholder="SUB-881" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white">
+              </div>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300">Address</label>
+              <input type="text" id="cust-address" required placeholder="Salmiya, Blk 4, St 12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300">Dietary / Special Notes</label>
+              <textarea id="cust-notes" rows="2" placeholder="No Dairy / Leave at door" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-2 rounded-lg text-white">
+              + Generate Sticker
+            </button>
+          </form>
+        </div>
+
+        <!-- STICKER PREVIEW SHEET -->
+        <div class="lg:col-span-2 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+          <div id="printable-sheet" class="bg-white text-slate-900 p-4 rounded-xl grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Dynamic stickers generated here -->
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- RIGHT COLUMN: STICKER SHEET PREVIEW -->
-    <section class="lg:col-span-2 space-y-4">
-      <div class="flex justify-between items-center bg-slate-800 border border-slate-700 p-4 rounded-2xl">
-        <h2 class="font-bold text-slate-200 text-base flex items-center gap-2">
-          <i data-lucide="printer" class="w-5 h-5 text-emerald-400"></i> Sticker Sheet Preview
-        </h2>
-        <span id="sticker-count" class="bg-emerald-950 text-emerald-400 border border-emerald-800 text-xs font-bold px-3 py-1 rounded-full">
-          2 Stickers Ready
-        </span>
+    <!-- ========================================== -->
+    <!-- SECTION 2: DRIVER SCANNER & DELIVERY PORTAL -->
+    <!-- ========================================== -->
+    <section id="view-driver" class="hidden space-y-5">
+      <!-- DISPATCH SCAN TRIGGER -->
+      <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-5 rounded-2xl shadow-lg text-white">
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <h2 class="text-xl font-bold">Dispatch Area Scanner</h2>
+            <p class="text-emerald-100 text-xs">Scan box barcode to auto-assign order to your driver profile.</p>
+          </div>
+          <i data-lucide="qr-code" class="w-6 h-6"></i>
+        </div>
+        <button onclick="openScanner()" class="w-full mt-2 bg-white text-emerald-950 font-bold py-3 rounded-xl shadow flex items-center justify-center gap-2">
+          <i data-lucide="camera" class="w-5 h-5 text-emerald-600"></i> Scan Box Barcode Now
+        </button>
       </div>
 
-      <!-- PRINTABLE AREA (A4 Container) -->
-      <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl overflow-x-auto">
-        <div id="printable-sheet" class="bg-white text-slate-900 p-6 rounded-xl grid grid-cols-2 gap-4 min-w-[650px]">
-          <!-- Dynamic stickers rendered here -->
+      <!-- ASSIGNED DELIVERIES LIST -->
+      <div class="space-y-3">
+        <h3 class="font-bold text-slate-200 text-base flex items-center gap-2">
+          <i data-lucide="package" class="w-4 h-4 text-emerald-400"></i> My Active Deliveries
+        </h3>
+
+        <div id="driver-delivery-list" class="space-y-3">
+          <!-- Dynamically populated assigned delivery cards -->
         </div>
       </div>
     </section>
   </main>
 
+  <!-- MODAL: CAMERA SCANNER -->
+  <div id="scanner-modal" class="fixed inset-0 bg-slate-950/95 z-50 hidden flex-col justify-between p-4">
+    <div class="flex justify-between items-center">
+      <h3 class="text-white font-bold text-lg">Scan Box Sticker Barcode</h3>
+      <button onclick="closeScanner()" class="p-2 bg-slate-800 text-slate-400 rounded-full hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+    <div class="my-auto">
+      <div id="reader" class="overflow-hidden rounded-2xl border-2 border-emerald-500"></div>
+    </div>
+    <button onclick="closeScanner()" class="w-full bg-slate-800 text-slate-300 py-3 rounded-xl font-semibold">
+      Close Camera
+    </button>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
   <script>
     lucide.createIcons();
 
-    // Default Subscription List Demo Data
+    // Data State
     let subscriptions = [
       {
         barcode: "BOX-20260728-1001",
         customerId: "SUB-101",
         name: "Sara Al-Kuwaiti",
         phone: "+965 9988 7766",
-        address: "Block 4, Street 12, House 45, Salmiya",
-        notes: "Keto Meal / Leave at door and ring bell."
-      },
-      {
-        barcode: "BOX-20260728-1002",
-        customerId: "SUB-102",
-        name: "Mohammad Abdullah",
-        phone: "+965 6655 4433",
-        address: "Block 1, Street 80, Bldg 3, Apt 12, Jabriya",
-        notes: "No Dairy / Call before arrival."
+        address: "Salmiya, Block 4, Street 12, House 45",
+        notes: "Keto / Leave at doorstep.",
+        assignedTo: null,
+        status: "pending" // pending, assigned, delivered, cancelled
       }
     ];
 
-    // Render stickers on screen
+    let currentDriver = "driver_01";
+    let html5QrcodeScanner = null;
+
+    // Switch Views
+    function switchTab(tab) {
+      document.getElementById('view-stickers').classList.toggle('hidden', tab !== 'stickers');
+      document.getElementById('view-driver').classList.toggle('hidden', tab !== 'driver');
+      
+      document.getElementById('tab-stickers').className = tab === 'stickers' ? 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition' : 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
+      document.getElementById('tab-driver').className = tab === 'driver' ? 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition' : 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
+    }
+
+    // Render Printable Stickers
     function renderStickers() {
       const sheet = document.getElementById('printable-sheet');
-      document.getElementById('sticker-count').innerText = `${subscriptions.length} Stickers Ready`;
       sheet.innerHTML = '';
 
       subscriptions.forEach((sub, index) => {
-        const stickerHtml = `
-          <div class="border-2 border-dashed border-slate-400 rounded-xl p-3 bg-white space-y-2 relative flex flex-col justify-between shadow-sm">
-            <!-- BRAND HEADER -->
-            <div class="flex justify-between items-center border-b border-slate-200 pb-1.5">
-              <span class="font-black text-xs text-emerald-700 tracking-wider uppercase">FreshDiet Express</span>
-              <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 font-bold">ID: ${sub.customerId}</span>
+        sheet.innerHTML += `
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-3 bg-white space-y-2">
+            <div class="flex justify-between items-center border-b pb-1">
+              <span class="font-bold text-xs text-emerald-700">FreshDiet Express</span>
+              <span class="text-[10px] bg-slate-100 px-1 rounded font-mono">ID: ${sub.customerId}</span>
             </div>
-
-            <!-- CUSTOMER DETAILS -->
-            <div class="space-y-1">
-              <h3 class="font-bold text-sm text-slate-900 leading-tight">${sub.name}</h3>
+            <div class="space-y-0.5">
+              <h4 class="font-bold text-sm leading-tight">${sub.name}</h4>
               <p class="text-[11px] font-semibold text-slate-700">${sub.phone}</p>
-              <p class="text-[10px] text-slate-600 leading-tight">${sub.address}</p>
-              <div class="bg-amber-50 border border-amber-200 text-amber-900 text-[10px] font-medium p-1.5 rounded mt-1">
-                <strong>Notes:</strong> ${sub.notes || 'None'}
-              </div>
+              <p class="text-[10px] text-slate-600">${sub.address}</p>
+              <p class="text-[10px] bg-amber-50 text-amber-900 p-1 rounded font-medium mt-1"><strong>Notes:</strong> ${sub.notes}</p>
             </div>
-
-            <!-- AUTOMATIC BARCODE GENERATED HERE -->
-            <div class="pt-1 text-center border-t border-slate-200">
-              <svg id="barcode-${index}" class="mx-auto w-full max-h-14"></svg>
+            <div class="pt-1 text-center border-t">
+              <svg id="barcode-${index}" class="mx-auto max-h-12 w-full"></svg>
             </div>
           </div>
         `;
-        sheet.innerHTML += stickerHtml;
       });
 
-      // Generate Barcodes using JSBarcode
       subscriptions.forEach((sub, index) => {
         JsBarcode(`#barcode-${index}`, sub.barcode, {
           format: "CODE128",
-          height: 35,
-          fontSize: 11,
-          margin: 2,
+          height: 30,
+          fontSize: 10,
           displayValue: true
         });
       });
     }
 
-    // Add new customer manually
-    function addCustomerManual(e) {
+    // Add Subscription
+    function addSubscription(e) {
       e.preventDefault();
-      const name = document.getElementById('cust-name').value;
-      const phone = document.getElementById('cust-phone').value;
-      const custId = document.getElementById('cust-id').value;
-      const address = document.getElementById('cust-address').value;
-      const notes = document.getElementById('cust-notes').value;
-
-      const newBarcode = `BOX-20260728-${Math.floor(1000 + Math.random() * 9000)}`;
-
-      subscriptions.push({
-        barcode: newBarcode,
-        customerId: custId,
-        name,
-        phone,
-        address,
-        notes
-      });
-
-      renderStickers();
-      document.getElementById('add-form').reset();
-    }
-
-    // Handle CSV / JSON File Import
-    function handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const content = e.target.result;
-        // Basic JSON or CSV parser placeholder logic
-        if (file.name.endsWith('.json')) {
-          const data = JSON.parse(content);
-          subscriptions = data.map((item, i) => ({
-            barcode: `BOX-20260728-${1000 + i}`,
-            customerId: item.customerId || `SUB-${i+1}`,
-            name: item.name,
-            phone: item.phone,
-            address: item.address,
-            notes: item.notes
-          }));
-          renderStickers();
-        }
+      const newSub = {
+        barcode: `BOX-20260728-${Math.floor(1000 + Math.random() * 9000)}`,
+        customerId: document.getElementById('cust-id').value,
+        name: document.getElementById('cust-name').value,
+        phone: document.getElementById('cust-phone').value,
+        address: document.getElementById('cust-address').value,
+        notes: document.getElementById('cust-notes').value,
+        assignedTo: null,
+        status: "pending"
       };
-      reader.readAsText(file);
+
+      subscriptions.push(newSub);
+      renderStickers();
+      e.target.reset();
     }
 
-    // Download PDF Sheet for Printing
+    // Download PDF Sheet
     function downloadStickerPDF() {
       const element = document.getElementById('printable-sheet');
-      const opt = {
-        margin:       0.3,
-        filename:     `FreshDiet_Stickers_${new Date().toISOString().split('T')[0]}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-      };
-
-      html2pdf().set(opt).from(element).save();
+      html2pdf().from(element).save('FreshDiet_Stickers.pdf');
     }
 
-    // Initial render
+    // Barcode Scanner & Driver Assignment
+    function openScanner() {
+      document.getElementById('scanner-modal').classList.remove('hidden');
+      document.getElementById('scanner-modal').classList.add('flex');
+      html5QrcodeScanner = new Html5Qrcode("reader");
+      html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 }, onScanSuccess);
+    }
+
+    function closeScanner() {
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(() => {
+          document.getElementById('scanner-modal').classList.add('hidden');
+        });
+      }
+    }
+
+    function onScanSuccess(decodedBarcode) {
+      closeScanner();
+      const box = subscriptions.find(s => s.barcode === decodedBarcode);
+      if (box) {
+        box.assignedTo = currentDriver;
+        box.status = "assigned";
+        alert(`Box ${decodedBarcode} Auto-Assigned to ${currentDriver}!`);
+        renderDriverDeliveries();
+      } else {
+        alert("Barcode not found in subscriptions!");
+      }
+    }
+
+    // Render Driver Deliveries
+    function renderDriverDeliveries() {
+      const list = document.getElementById('driver-delivery-list');
+      const assignedBoxes = subscriptions.filter(s => s.assignedTo === currentDriver && s.status === 'assigned');
+      
+      list.innerHTML = assignedBoxes.map(sub => `
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between border-b border-slate-700 pb-2">
+            <span class="text-xs font-mono text-emerald-400">${sub.barcode}</span>
+            <span class="text-xs bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded font-bold">Assigned</span>
+          </div>
+          <h4 class="font-bold text-white text-base">${sub.name}</h4>
+          <p class="text-xs text-slate-300">📱 ${sub.phone}</p>
+          <p class="text-xs text-slate-300">📍 ${sub.address}</p>
+          <p class="text-xs bg-slate-900 p-2 rounded text-amber-400">Notes: ${sub.notes}</p>
+        </div>
+      `).join('') || '<p class="text-xs text-slate-400 text-center py-6">No assigned boxes yet. Scan a sticker to assign!</p>';
+    }
+
+    // Initialize
     renderStickers();
+    renderDriverDeliveries();
   </script>
 </body>
 </html>
