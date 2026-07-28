@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Numo Now</title>
+  <title>Numo Fresh - Diet Logistics & Dispatch</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
       --primary-color: #0022d6;
       --bg-color: #f4f5f7;
       --card-bg: #ffffff;
       --text-color: #222;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
     }
 
     * {
@@ -48,7 +52,7 @@
 
     .nav-actions button {
       padding: 8px 16px;
-      margin-left: 10px;
+      margin-left: 6px;
       border: 1px solid var(--primary-color);
       background: white;
       color: var(--primary-color);
@@ -63,33 +67,6 @@
       color: white;
     }
 
-    /* Location Bar */
-    .location-header {
-      background: white;
-      padding: 12px 30px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .location-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .change-loc-btn {
-      color: var(--primary-color);
-      font-size: 0.85rem;
-      font-weight: bold;
-      text-decoration: underline;
-    }
-
-    /* Container */
     .container {
       max-width: 1200px;
       width: 100%;
@@ -97,125 +74,17 @@
       padding: 0 20px 80px 20px;
     }
 
-    /* Delivery / Pickup Toggle */
-    .service-type {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: #fff;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .service-btn {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-      cursor: pointer;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-
-    .service-btn.active {
-      background: white;
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    /* Menu Grid */
-    .section-title {
-      margin-bottom: 15px;
-      font-size: 1.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-    }
-
-    .food-card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.2s;
-    }
-
-    .food-card:hover {
-      transform: translateY(-3px);
-    }
-
-    .img-container {
-      width: 100%;
-      height: 160px;
-      background-color: #e2e8f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .food-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .food-info {
-      padding: 12px;
-      flex-grow: 1;
-    }
-
-    .food-name {
-      font-size: 1rem;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .food-desc {
-      font-size: 0.8rem;
-      color: #666;
-      margin-bottom: 10px;
-    }
-
-    .food-price {
-      font-weight: bold;
-      color: var(--primary-color);
-      font-size: 0.95rem;
-      margin-bottom: 10px;
-    }
-
-    .add-btn {
-      width: 100%;
-      padding: 8px;
-      background: transparent;
-      border: 1px solid var(--primary-color);
-      color: var(--primary-color);
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .add-btn:hover {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    /* Admin Panel */
-    .admin-panel {
-      display: none;
+    /* Cards & Forms */
+    .card {
       background: white;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .card h2, .card h3 {
+      margin-bottom: 12px;
     }
 
     .form-group {
@@ -229,668 +98,580 @@
       font-size: 0.9rem;
     }
 
-    .form-group input, .form-group textarea, .form-group select {
+    .form-group input, .form-group select, .form-group textarea {
       width: 100%;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
+      font-size: 0.95rem;
     }
 
-    .button-group {
-      display: flex;
-      gap: 10px;
-    }
-
-    .admin-btn {
-      padding: 10px 20px;
-      background: #28a745;
+    .btn {
+      padding: 10px 18px;
+      background: var(--primary-color);
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 0.95rem;
     }
 
-    .reset-btn {
-      padding: 10px 20px;
-      background: #dc3545;
-      color: white;
-      border: none;
+    .btn-danger { background: var(--danger-color); }
+    .btn-success { background: var(--success-color); }
+
+    /* Driver App Layout */
+    .driver-info-box {
+      background: #f0f4ff;
+      border-left: 4px solid var(--primary-color);
+      padding: 12px;
       border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .admin-table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-    }
-
-    .admin-table th, .admin-table td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-
-    .action-btn-danger {
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    /* MODAL BASE */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-card {
-      background: white;
-      width: 90%;
-      max-width: 500px;
-      max-height: 85vh;
-      border-radius: 12px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .modal-header {
-      padding: 15px 20px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 1.1rem;
-      font-weight: bold;
-    }
-
-    .modal-close {
-      cursor: pointer;
-      font-size: 1.4rem;
-      background: none;
-      border: none;
-    }
-
-    .modal-body {
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    /* LOCATION MODAL STYLES */
-    .search-box {
-      width: 100%;
-      padding: 10px 15px;
-      border: 1px solid #ccc;
-      border-radius: 20px;
       margin-bottom: 15px;
-      outline: none;
     }
 
-    .governate-accordion {
-      border: 1px solid #eee;
+    .driver-info-box p {
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .notes-badge {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 400px;
+      margin: 10px auto;
       border-radius: 8px;
-      margin-bottom: 8px;
       overflow: hidden;
     }
 
-    .governate-title {
-      padding: 12px 15px;
-      background: #f9f9f9;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
+    /* Dashboard KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
     }
 
-    .governate-title:hover {
-      background: #f0f0f0;
-    }
-
-    .area-list {
-      display: none;
-      padding: 5px 0;
+    .kpi-card {
       background: white;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-top: 4px solid var(--primary-color);
     }
 
-    .area-list.open {
-      display: block;
+    .kpi-card.pending { border-color: var(--warning-color); }
+    .kpi-card.delivered { border-color: var(--success-color); }
+    .kpi-card.canceled { border-color: var(--danger-color); }
+
+    .kpi-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-top: 6px;
     }
 
-    .area-item {
-      padding: 10px 25px;
-      cursor: pointer;
-      border-bottom: 1px solid #f5f5f5;
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
       font-size: 0.9rem;
     }
 
-    .area-item:hover {
-      background: #f0f4ff;
-      color: var(--primary-color);
+    th {
+      background: #f8fafc;
+      color: #64748b;
+      text-transform: uppercase;
+      font-size: 0.8rem;
     }
 
-    /* CART & CHECKOUT STYLES */
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .qty-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .qty-btn {
-      width: 25px;
-      height: 25px;
-      border: 1px solid var(--primary-color);
-      background: white;
-      color: var(--primary-color);
-      border-radius: 4px;
-      cursor: pointer;
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
       font-weight: bold;
+      text-transform: uppercase;
     }
 
-    .payment-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
+    .status-PENDING { background: #fef3c7; color: #b45309; }
+    .status-OUT_FOR_DELIVERY { background: #dbeafe; color: #1e40af; }
+    .status-DELIVERED { background: #d1fae5; color: #065f46; }
+    .status-CANCELED { background: #fee2e2; color: #991b1b; }
+
+    /* Printable Sticker Label */
+    .sticker-preview {
+      border: 2px dashed #333;
+      padding: 15px;
       border-radius: 8px;
-      margin-bottom: 10px;
-      cursor: pointer;
+      width: 280px;
+      background: #fff;
+      margin-top: 10px;
     }
 
-    .payment-option input {
-      cursor: pointer;
-    }
-
-    /* Bottom Floating Cart Bar */
-    .cart-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--primary-color);
-      color: white;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 100;
-    }
+    .sticker-preview h4 { font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 8px; }
+    .sticker-code { font-family: monospace; font-size: 1.1rem; font-weight: bold; text-align: center; margin: 8px 0; background: #eee; padding: 4px; }
   </style>
 </head>
 <body>
 
   <!-- NAVBAR -->
   <header>
-    <div class="brand-title">Numo Now</div>
+    <div class="brand-title">Numo Fresh Logistics</div>
     <div class="nav-actions">
-      <button id="view-customer-btn" class="active" onclick="showView('customer')">Menu View</button>
-      <button id="view-admin-btn" onclick="showView('admin')">Admin Panel</button>
+      <button id="nav-driver" class="active" onclick="switchView('driver')">📱 Driver Portal</button>
+      <button id="nav-kitchen" onclick="switchView('kitchen')">🏷️ Kitchen Labels</button>
+      <button id="nav-manager" onclick="switchView('manager')">📊 Manager Dashboard</button>
     </div>
   </header>
 
-  <!-- LOCATION BANNER -->
-  <div class="location-header" onclick="openLocationModal()">
-    <div class="location-info">
-      📍 Delivering to: <span id="current-location-text">Select your area in Kuwait</span>
-    </div>
-    <div class="change-loc-btn">Change</div>
-  </div>
-
   <div class="container">
-    
-    <!-- CUSTOMER VIEW -->
-    <div id="customer-view">
-      <div class="service-type">
-        <button class="service-btn active">Delivery</button>
-        <button class="service-btn">Pickup</button>
-      </div>
 
-      <h2 class="section-title">NUMO MENU</h2>
-      <div class="menu-grid" id="menu-container">
-        <!-- Dynamic food items render here -->
-      </div>
-    </div>
-
-    <!-- ADMIN VIEW -->
-    <div id="admin-view" class="admin-panel">
-      <h2>Admin Dashboard - Add New Dish</h2>
-      <br>
-      <form id="add-item-form">
-        <div class="form-group">
-          <label for="item-name">Item Name</label>
-          <input type="text" id="item-name" required placeholder="e.g., Giant Sandwich">
-        </div>
-        <div class="form-group">
-          <label for="item-price">Price (KD)</label>
-          <input type="number" step="0.001" id="item-price" required placeholder="e.g., 2.000">
-        </div>
-        <div class="form-group">
-          <label for="item-file">Upload Dish Image</label>
-          <input type="file" id="item-file" accept="image/*">
-        </div>
-        <div class="form-group">
-          <label for="item-desc">Description (Optional)</label>
-          <textarea id="item-desc" rows="2" placeholder="Brief details about the dish..."></textarea>
-        </div>
-        <div class="button-group">
-          <button type="submit" class="admin-btn">Add Dish to Menu</button>
-          <button type="button" class="reset-btn" onclick="resetToDefaults()">Clear & Reset Menu</button>
-        </div>
-      </form>
-
-      <h3 style="margin-top: 30px;">Current Menu Items</h3>
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="admin-item-list">
-          <!-- Item rows render here -->
-        </tbody>
-      </table>
-    </div>
-
-  </div>
-
-  <!-- FLOATING CART BAR -->
-  <div class="cart-bar" id="cart-bar" onclick="openCartModal()">
-    <span>Checkout (<span id="cart-count">0</span> items)</span>
-    <span>Total: <span id="cart-total">0.000</span> KD</span>
-  </div>
-
-  <!-- LOCATION SELECTOR MODAL -->
-  <div class="modal-overlay" id="location-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <span>Location</span>
-        <button class="modal-close" onclick="closeLocationModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <input type="text" class="search-box" id="area-search" placeholder="🔍 Search area name..." oninput="filterAreas()">
-        <div id="governate-container">
-          <!-- Kuwait Governorates & Areas render here -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHECKOUT / CART MODAL -->
-  <div class="modal-overlay" id="cart-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <span>Your Order Basket</span>
-        <button class="modal-close" onclick="closeCartModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div id="cart-items-container">
-          <!-- Cart items list -->
-        </div>
-        <hr style="margin: 15px 0;">
-        <h3>Select Payment Method</h3>
-        <br>
-        <label class="payment-option">
-          <input type="radio" name="payment" value="KNET" checked>
-          <span>💳 Online Payment (K-NET / Credit Card)</span>
-        </label>
-        <label class="payment-option">
-          <input type="radio" name="payment" value="COD">
-          <span>💵 Cash on Delivery</span>
-        </label>
+    <!-- 1. DRIVER PORTAL -->
+    <div id="view-driver">
+      <div class="card" id="driver-login-card">
+        <h2>🔑 Driver Login</h2>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">Use one of the test driver accounts below to log in:</p>
         
-        <br>
         <div class="form-group">
-          <label>Delivery Address Details</label>
-          <input type="text" id="cust-street" placeholder="Block, Street, House/Building No." required>
+          <label>Select Driver Account</label>
+          <select id="driver-select">
+            <option value="driver_test1">driver_test1 (Password: DietBox#2026!A)</option>
+            <option value="driver_test2">driver_test2 (Password: DietBox#2026!B)</option>
+          </select>
         </div>
         <div class="form-group">
-          <label>Phone Number</label>
-          <input type="tel" id="cust-phone" placeholder="e.g., 99887766" required>
+          <label>Password</label>
+          <input type="password" id="driver-password" value="DietBox#2026!A">
+        </div>
+        <button class="btn" onclick="loginDriver()">Login to Driver Portal</button>
+      </div>
+
+      <div id="driver-app" style="display: none;">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>🚚 Driver Session: <span id="active-driver-name" style="color: var(--primary-color);"></span></h2>
+            <button class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="logoutDriver()">Logout</button>
+          </div>
         </div>
 
-        <button class="admin-btn" style="width: 100%; margin-top: 15px;" onclick="placeOrder()">Place Order Now</button>
+        <!-- Dispatch Area Scan -->
+        <div class="card">
+          <h3>📦 Step 1: Scan Dispatch Box Barcode</h3>
+          <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">Scan barcode sticker at dispatch to automatically assign the box to you.</p>
+          
+          <div id="reader"></div>
+
+          <div style="margin-top: 15px;">
+            <label style="font-size: 0.85rem; font-weight: bold;">Or Enter Barcode Manually:</label>
+            <div style="display: flex; gap: 8px; margin-top: 5px;">
+              <input type="text" id="manual-barcode" placeholder="e.g. DBOX-99123">
+              <button class="btn" onclick="assignBoxManually()">Assign Box</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Delivery Box -->
+        <div class="card" id="active-delivery-card" style="display: none;">
+          <h3 style="color: var(--primary-color);">📍 Step 2: Active Customer Delivery</h3>
+          
+          <div class="driver-info-box">
+            <p><strong>Customer ID & Name:</strong> <span id="d-cust-name"></span></p>
+            <p><strong>Mobile Number:</strong> <a id="d-cust-phone-link" href="#" style="color: var(--primary-color); font-weight: bold;"><span id="d-cust-phone"></span></a></p>
+            <p><strong>Delivery Address:</strong> <span id="d-cust-address"></span></p>
+            <p><strong>Special Dietary Notes:</strong> <span class="notes-badge" id="d-cust-notes"></span></p>
+          </div>
+
+          <div class="form-group">
+            <label>📸 Doorstep Delivery Photo Proof</label>
+            <input type="file" id="delivery-photo" accept="image/*" capture="environment">
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn btn-success" style="flex: 1;" onclick="completeDelivery('DELIVERED')">✅ Confirm Delivered</button>
+            <button class="btn btn-danger" style="flex: 1;" onclick="completeDelivery('CANCELED')">❌ Cancel / Return to Kitchen</button>
+          </div>
+        </div>
       </div>
     </div>
+
+
+    <!-- 2. KITCHEN LABELS & SUBSCRIPTIONS -->
+    <div id="view-kitchen" style="display: none;">
+      <div class="card">
+        <h2>🥗 Add Daily Subscription</h2>
+        <form id="add-sub-form">
+          <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" id="sub-name" required placeholder="e.g. Sarah Ahmed">
+          </div>
+          <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="tel" id="sub-phone" required placeholder="e.g. +965 99123456">
+          </div>
+          <div class="form-group">
+            <label>Delivery Governorate / Address</label>
+            <input type="text" id="sub-address" required placeholder="e.g. Salmiya, Block 4, Street 12, House 5">
+          </div>
+          <div class="form-group">
+            <label>Dietary / Delivery Notes</label>
+            <input type="text" id="sub-notes" placeholder="e.g. Low Carb, Leave box at front door">
+          </div>
+          <button type="submit" class="btn">Generate Subscription & Barcode Sticker</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>🏷️ Daily Active Diet Box Labels</h2>
+        <div id="stickers-container" style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px;">
+          <!-- Sticker previews render here -->
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 3. LOGISTICS MANAGER DASHBOARD -->
+    <div id="view-manager" style="display: none;">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <h2>📊 Delivery KPI Report</h2>
+          <div>
+            <label style="font-weight: bold; font-size: 0.9rem;">Filter Date: </label>
+            <input type="date" id="kpi-date-filter" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;" onchange="renderManagerDashboard()">
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div style="color: #64748b; font-size: 0.85rem; font-weight: bold;">TOTAL ORDERS</div>
+          <div class="kpi-value" id="kpi-total">0</div>
+        </div>
+        <div class="kpi-card pending">
+          <div style="color: #b45309; font-size: 0.85rem; font-weight: bold;">PENDING DISPATCH</div>
+          <div class="kpi-value" id="kpi-pending" style="color: var(--warning-color);">0</div>
+        </div>
+        <div class="kpi-card">
+          <div style="color: #1e40af; font-size: 0.85rem; font-weight: bold;">OUT FOR DELIVERY</div>
+          <div class="kpi-value" id="kpi-out" style="color: #1e40af;">0</div>
+        </div>
+        <div class="kpi-card delivered">
+          <div style="color: #065f46; font-size: 0.85rem; font-weight: bold;">DELIVERED</div>
+          <div class="kpi-value" id="kpi-delivered" style="color: var(--success-color);">0</div>
+        </div>
+        <div class="kpi-card canceled">
+          <div style="color: #991b1b; font-size: 0.85rem; font-weight: bold;">CANCELED / UNASSIGNED</div>
+          <div class="kpi-value" id="kpi-canceled" style="color: var(--danger-color);">0</div>
+        </div>
+      </div>
+
+      <!-- Driver Performance Table -->
+      <div class="card">
+        <h3>🚚 Driver Performance Report</h3>
+        <table style="margin-top: 10px;">
+          <thead>
+            <tr>
+              <th>Driver Username</th>
+              <th>Assigned Boxes</th>
+              <th>Delivered</th>
+              <th>Canceled</th>
+              <th>Success Rate</th>
+            </tr>
+          </thead>
+          <tbody id="driver-kpi-rows">
+            <!-- Dynamic Driver Stats -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- All Orders Master Log -->
+      <div class="card">
+        <h3>📋 Live Delivery Tracking Log</h3>
+        <table style="margin-top: 10px;">
+          <thead>
+            <tr>
+              <th>Barcode</th>
+              <th>Customer Info</th>
+              <th>Address & Notes</th>
+              <th>Assigned Driver</th>
+              <th>Status</th>
+              <th>Proof / Notes</th>
+            </tr>
+          </thead>
+          <tbody id="master-log-rows">
+            <!-- Dynamic Order Logs -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // KUWAIT GOVERNORATES & AREAS DATA
-    const kuwaitData = [
+    // INITIAL SYSTEM DATA
+    const initialSubscriptions = [
       {
-        governate: "Mubarak Al-Kabeer",
-        areas: ["Abu Fatira", "Abu Hasaniya", "Adan", "Fintas", "Mubarak Al-Kabeer", "Qurain", "Sabah Al-Salem"]
+        barcode: "DBOX-99123",
+        date: new Date().toISOString().split('T')[0],
+        customerName: "Sarah Ahmed",
+        customerPhone: "+965 99123456",
+        address: "Salmiya, Block 4, Street 12, House 5",
+        notes: "Keto Diet - Low Carb, No nuts",
+        status: "PENDING",
+        assignedDriver: null,
+        photoProof: null,
+        cancelReason: null
       },
       {
-        governate: "Ahmadi",
-        areas: ["Ahmadi", "Egaila", "Fahaheel", "Fahaheel Port", "Mahboula", "Mangaf", "Sabah Al-Ahmad", "Wafra"]
-      },
-      {
-        governate: "Farwaniya",
-        areas: ["Abbasiya", "Ardiya", "Farwaniya", "Jleeb Al-Shuyoukh", "Khaitan", "Riggai", "Sabah Al-Nasser"]
-      },
-      {
-        governate: "Hawalli",
-        areas: ["Bayan", "Hawalli", "Jabriya", "Mishref", "Salmiya", "Salwa", "Shaab"]
-      },
-      {
-        governate: "Jahra",
-        areas: ["Amghara", "Jahra", "Naeem", "Naseem", "Oula", "Saad Al-Abdullah", "Sulaibiya"]
-      },
-      {
-        governate: "Kuwait City",
-        areas: ["Abdullah Al-Salem", "Bneid Al-Gar", "Dasma", "Dasmah", "Kaifan", "Mirqab", "Nuzha", "Sharq", "Shuwaikh"]
+        barcode: "DBOX-98765",
+        date: new Date().toISOString().split('T')[0],
+        customerName: "Mohammad Al-Otaibi",
+        customerPhone: "+965 98765432",
+        address: "Hawalli, Block 1, Street 3, Villa 18",
+        notes: "High Protein - 2200 kcal, Extra chicken",
+        status: "PENDING",
+        assignedDriver: null,
+        photoProof: null,
+        cancelReason: null
       }
     ];
 
-    // Placeholder image
-    const localSvgPlaceholder = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'><rect width='100%' height='100%' fill='%23dbe2ef'/><text x='50%' y='50%' font-size='16' fill='%233f72af' font-family='sans-serif' text-anchor='middle' dominant-baseline='middle'>Numo Dish Image</text></svg>";
+    let currentDriver = null;
+    let activeDeliveryBarcode = null;
+    let html5QrcodeScanner = null;
 
-    const defaultMenu = [
-      { id: 1, name: "Giant Meal", price: 2.950, image: localSvgPlaceholder, description: "Served with crispy fries and beverage." },
-      { id: 2, name: "Giant Sandwich", price: 2.000, image: localSvgPlaceholder, description: "Large crispy chicken sandwich with cheese & jalapeno." },
-      { id: 3, name: "Single Crispy Quesadilla Meal", price: 2.000, image: localSvgPlaceholder, description: "Grilled quesadilla served with fries." },
-      { id: 4, name: "Single Crispy Quesadilla", price: 1.250, image: localSvgPlaceholder, description: "Single piece crispy quesadilla." }
-    ];
-
-    let cart = {};
-    let selectedLocation = "";
-
-    // Load & Save Menu
-    function getStoredMenu() {
-      const stored = localStorage.getItem('numo_v4_menu');
-      return stored ? JSON.parse(stored) : defaultMenu;
+    // LOCAL STORAGE MANAGEMENT
+    function getStoredOrders() {
+      const data = localStorage.getItem('numo_logistics_orders');
+      return data ? JSON.parse(data) : initialSubscriptions;
     }
 
-    function saveMenu(menu) {
-      localStorage.setItem('numo_v4_menu', JSON.stringify(menu));
-      renderMenu();
-      renderAdminTable();
+    function saveOrders(orders) {
+      localStorage.setItem('numo_logistics_orders', JSON.stringify(orders));
+      renderStickers();
+      renderManagerDashboard();
     }
 
-    function resetToDefaults() {
-      if(confirm('Are you sure you want to reset the menu?')) {
-        localStorage.removeItem('numo_v4_menu');
-        saveMenu(defaultMenu);
-      }
+    // VIEW SWITCHER
+    function switchView(viewName) {
+      document.getElementById('view-driver').style.display = viewName === 'driver' ? 'block' : 'none';
+      document.getElementById('view-kitchen').style.display = viewName === 'kitchen' ? 'block' : 'none';
+      document.getElementById('view-manager').style.display = viewName === 'manager' ? 'block' : 'none';
+
+      document.getElementById('nav-driver').classList.toggle('active', viewName === 'driver');
+      document.getElementById('nav-kitchen').classList.toggle('active', viewName === 'kitchen');
+      document.getElementById('nav-manager').classList.toggle('active', viewName === 'manager');
+
+      if (viewName === 'manager') renderManagerDashboard();
+      if (viewName === 'kitchen') renderStickers();
     }
 
-    // Render Food Cards
-    function renderMenu() {
-      const menu = getStoredMenu();
-      const container = document.getElementById('menu-container');
-      container.innerHTML = '';
+    // 1. DRIVER PORTAL LOGIC
+    function loginDriver() {
+      const username = document.getElementById('driver-select').value;
+      currentDriver = username;
+      document.getElementById('driver-login-card').style.display = 'none';
+      document.getElementById('driver-app').style.display = 'block';
+      document.getElementById('active-driver-name').innerText = username;
 
-      menu.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'food-card';
-        card.innerHTML = `
-          <div class="img-container">
-            <img src="${item.image || localSvgPlaceholder}" alt="${item.name}">
-          </div>
-          <div class="food-info">
-            <div class="food-name">${item.name}</div>
-            <div class="food-desc">${item.description || ''}</div>
-            <div class="food-price">${parseFloat(item.price).toFixed(3)} KD</div>
-          </div>
-          <div style="padding: 12px; padding-top: 0;">
-            <button class="add-btn" onclick="addToCart(${item.id})">+ Add</button>
-          </div>
-        `;
-        container.appendChild(card);
+      initQrScanner();
+    }
+
+    function logoutDriver() {
+      currentDriver = null;
+      if (html5QrcodeScanner) html5QrcodeScanner.clear();
+      document.getElementById('driver-login-card').style.display = 'block';
+      document.getElementById('driver-app').style.display = 'none';
+    }
+
+    function initQrScanner() {
+      if (html5QrcodeScanner) return;
+      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 200 });
+      html5QrcodeScanner.render((decodedText) => {
+        assignBox(decodedText);
       });
     }
 
-    // Cart Handlers
-    function addToCart(itemId) {
-      const menu = getStoredMenu();
-      const item = menu.find(i => i.id === itemId);
-      if (!item) return;
-
-      if (cart[itemId]) {
-        cart[itemId].qty++;
-      } else {
-        cart[itemId] = { ...item, qty: 1 };
-      }
-      updateCartUI();
+    function assignBoxManually() {
+      const code = document.getElementById('manual-barcode').value.trim();
+      if (!code) return alert('Please enter a barcode');
+      assignBox(code);
     }
 
-    function changeQty(itemId, delta) {
-      if (cart[itemId]) {
-        cart[itemId].qty += delta;
-        if (cart[itemId].qty <= 0) {
-          delete cart[itemId];
-        }
-      }
-      updateCartUI();
-      renderCartItems();
+    function assignBox(barcode) {
+      const orders = getStoredOrders();
+      const order = orders.find(o => o.barcode === barcode);
+
+      if (!order) return alert('❌ Invalid Barcode! Box not found in system.');
+      if (order.status !== 'PENDING') return alert(`⚠️ This box is already marked as ${order.status}`);
+
+      order.status = 'OUT_FOR_DELIVERY';
+      order.assignedDriver = currentDriver;
+      saveOrders(orders);
+
+      activeDeliveryBarcode = barcode;
+      displayActiveDelivery(order);
+      alert(`✅ Box ${barcode} successfully assigned to ${currentDriver}!`);
     }
 
-    function updateCartUI() {
-      let count = 0;
-      let total = 0;
-      Object.values(cart).forEach(i => {
-        count += i.qty;
-        total += i.price * i.qty;
-      });
-      document.getElementById('cart-count').innerText = count;
-      document.getElementById('cart-total').innerText = total.toFixed(3);
+    function displayActiveDelivery(order) {
+      document.getElementById('d-cust-name').innerText = order.customerName;
+      document.getElementById('d-cust-phone').innerText = order.customerPhone;
+      document.getElementById('d-cust-phone-link').href = `tel:${order.customerPhone}`;
+      document.getElementById('d-cust-address').innerText = order.address;
+      document.getElementById('d-cust-notes').innerText = order.notes || 'None';
+      document.getElementById('active-delivery-card').style.display = 'block';
     }
 
-    // Location Modal Render
-    function renderLocations() {
-      const container = document.getElementById('governate-container');
-      container.innerHTML = '';
+    function completeDelivery(newStatus) {
+      if (!activeDeliveryBarcode) return;
 
-      kuwaitData.forEach((gov, index) => {
-        const accordion = document.createElement('div');
-        accordion.className = 'governate-accordion';
-        accordion.innerHTML = `
-          <div class="governate-title" onclick="toggleAccordion(${index})">
-            <span>${gov.governate}</span>
-            <span>▼</span>
-          </div>
-          <div class="area-list" id="gov-${index}">
-            ${gov.areas.map(area => `<div class="area-item" onclick="selectLocation('${area}', '${gov.governate}')">${area}</div>`).join('')}
-          </div>
-        `;
-        container.appendChild(accordion);
-      });
-    }
+      const orders = getStoredOrders();
+      const order = orders.find(o => o.barcode === activeDeliveryBarcode);
 
-    function toggleAccordion(index) {
-      const el = document.getElementById(`gov-${index}`);
-      el.classList.toggle('open');
-    }
+      if (!order) return;
 
-    function filterAreas() {
-      const query = document.getElementById('area-search').value.toLowerCase();
-      kuwaitData.forEach((gov, index) => {
-        const list = document.getElementById(`gov-${index}`);
-        const areaItems = list.getElementsByClassName('area-item');
-        let hasMatch = false;
-
-        for (let item of areaItems) {
-          if (item.innerText.toLowerCase().includes(query)) {
-            item.style.display = 'block';
-            hasMatch = true;
-          } else {
-            item.style.display = 'none';
-          }
-        }
-
-        if (query.length > 0 && hasMatch) {
-          list.classList.add('open');
-        } else if (query.length === 0) {
-          list.classList.remove('open');
-        }
-      });
-    }
-
-    function selectLocation(area, governate) {
-      selectedLocation = `${area}, ${governate}`;
-      document.getElementById('current-location-text').innerText = selectedLocation;
-      closeLocationModal();
-    }
-
-    // Modal Toggles
-    function openLocationModal() { document.getElementById('location-modal').classList.add('active'); }
-    function closeLocationModal() { document.getElementById('location-modal').classList.remove('active'); }
-    function openCartModal() { 
-      renderCartItems();
-      document.getElementById('cart-modal').classList.add('active'); 
-    }
-    function closeCartModal() { document.getElementById('cart-modal').classList.remove('active'); }
-
-    function renderCartItems() {
-      const container = document.getElementById('cart-items-container');
-      container.innerHTML = '';
-      const items = Object.values(cart);
-
-      if (items.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:#888;">Your basket is empty.</p>';
-        return;
+      let cancelReason = null;
+      if (newStatus === 'CANCELED') {
+        cancelReason = prompt('Enter reason for cancellation (e.g. Customer unavailable, Wrong address):');
+        if (!cancelReason) return;
+        order.assignedDriver = null; // Unassign back to kitchen queue
       }
 
-      items.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'cart-item';
-        row.innerHTML = `
-          <div>
-            <strong>${item.name}</strong><br>
-            <small>${parseFloat(item.price).toFixed(3)} KD</small>
-          </div>
-          <div class="qty-controls">
-            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
-            <span>${item.qty}</span>
-            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
-          </div>
-        `;
-        container.appendChild(row);
-      });
+      order.status = newStatus;
+      order.cancelReason = cancelReason;
+      order.photoProof = "Uploaded doorstep_proof.jpg";
+
+      saveOrders(orders);
+
+      alert(`Order ${newStatus === 'DELIVERED' ? 'delivered successfully!' : 'canceled & unassigned back to kitchen!'}`);
+      document.getElementById('active-delivery-card').style.display = 'none';
+      activeDeliveryBarcode = null;
     }
 
-    function placeOrder() {
-      if (Object.keys(cart).length === 0) {
-        alert("Your cart is empty!");
-        return;
-      }
-      if (!selectedLocation) {
-        alert("Please select your delivery area first!");
-        openLocationModal();
-        return;
-      }
-
-      const street = document.getElementById('cust-street').value;
-      const phone = document.getElementById('cust-phone').value;
-      const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
-
-      if (!street || !phone) {
-        alert("Please enter your street address and phone number.");
-        return;
-      }
-
-      alert(`✅ Order Placed Successfully!\n\nArea: ${selectedLocation}\nAddress: ${street}\nPhone: ${phone}\nPayment: ${paymentMethod}`);
-      cart = {};
-      updateCartUI();
-      closeCartModal();
-    }
-
-    // Admin Helpers
-    function renderAdminTable() {
-      const menu = getStoredMenu();
-      const tbody = document.getElementById('admin-item-list');
-      tbody.innerHTML = '';
-
-      menu.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><img src="${item.image || localSvgPlaceholder}" style="width: 50px; height: 40px; object-fit: cover; border-radius: 4px;"></td>
-          <td>${item.name}</td>
-          <td>${parseFloat(item.price).toFixed(3)} KD</td>
-          <td><button class="action-btn-danger" onclick="deleteItem(${item.id})">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function convertFileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    document.getElementById('add-item-form').addEventListener('submit', async function(e) {
+    // 2. KITCHEN LABELS LOGIC
+    document.getElementById('add-sub-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const fileInput = document.getElementById('item-file');
-      let imageBase64 = localSvgPlaceholder;
+      const orders = getStoredOrders();
 
-      if (fileInput.files.length > 0) {
-        imageBase64 = await convertFileToBase64(fileInput.files[0]);
-      }
+      const newOrder = {
+        barcode: `DBOX-${Math.floor(10000 + Math.random() * 90000)}`,
+        date: new Date().toISOString().split('T')[0],
+        customerName: document.getElementById('sub-name').value,
+        customerPhone: document.getElementById('sub-phone').value,
+        address: document.getElementById('sub-address').value,
+        notes: document.getElementById('sub-notes').value,
+        status: "PENDING",
+        assignedDriver: null,
+        photoProof: null,
+        cancelReason: null
+      };
 
-      const menu = getStoredMenu();
-      menu.push({
-        id: Date.now(),
-        name: document.getElementById('item-name').value,
-        price: parseFloat(document.getElementById('item-price').value),
-        image: imageBase64,
-        description: document.getElementById('item-desc').value
-      });
-
-      saveMenu(menu);
+      orders.push(newOrder);
+      saveOrders(orders);
       this.reset();
-      alert('Dish added successfully!');
+      alert('Subscription created and barcode label generated!');
     });
 
-    function deleteItem(id) {
-      let menu = getStoredMenu();
-      menu = menu.filter(item => item.id !== id);
-      saveMenu(menu);
+    function renderStickers() {
+      const orders = getStoredOrders();
+      const container = document.getElementById('stickers-container');
+      container.innerHTML = '';
+
+      orders.forEach(o => {
+        const div = document.createElement('div');
+        div.className = 'sticker-preview';
+        div.innerHTML = `
+          <h4>🥗 NUMO FRESH DIET BOX</h4>
+          <p><strong>Name:</strong> ${o.customerName}</p>
+          <p><strong>Phone:</strong> ${o.customerPhone}</p>
+          <p><strong>Address:</strong> ${o.address}</p>
+          <p><strong>Notes:</strong> ${o.notes || 'N/A'}</p>
+          <div class="sticker-code">||||| ${o.barcode} |||||</div>
+          <small>Status: <strong>${o.status}</strong></small>
+        `;
+        container.appendChild(div);
+      });
     }
 
-    function showView(view) {
-      document.getElementById('customer-view').style.display = view === 'admin' ? 'none' : 'block';
-      document.getElementById('admin-view').style.display = view === 'admin' ? 'block' : 'none';
-      document.getElementById('view-customer-btn').classList.toggle('active', view === 'customer');
-      document.getElementById('view-admin-btn').classList.toggle('active', view === 'admin');
+    // 3. LOGISTICS MANAGER DASHBOARD LOGIC
+    function renderManagerDashboard() {
+      const orders = getStoredOrders();
+      const selectedDate = document.getElementById('kpi-date-filter').value || new Date().toISOString().split('T')[0];
+      
+      const filtered = orders.filter(o => o.date === selectedDate);
+
+      // KPI Counts
+      const pending = filtered.filter(o => o.status === 'PENDING').length;
+      const out = filtered.filter(o => o.status === 'OUT_FOR_DELIVERY').length;
+      const delivered = filtered.filter(o => o.status === 'DELIVERED').length;
+      const canceled = filtered.filter(o => o.status === 'CANCELED').length;
+
+      document.getElementById('kpi-total').innerText = filtered.length;
+      document.getElementById('kpi-pending').innerText = pending;
+      document.getElementById('kpi-out').innerText = out;
+      document.getElementById('kpi-delivered').innerText = delivered;
+      document.getElementById('kpi-canceled').innerText = canceled;
+
+      // Driver Performance Table
+      const driverList = ['driver_test1', 'driver_test2'];
+      const driverTbody = document.getElementById('driver-kpi-rows');
+      driverTbody.innerHTML = '';
+
+      driverList.forEach(drv => {
+        const drvOrders = filtered.filter(o => o.assignedDriver === drv || (o.status === 'CANCELED' && o.assignedDriver === drv));
+        const drvDelivered = drvOrders.filter(o => o.status === 'DELIVERED').length;
+        const drvCanceled = filtered.filter(o => o.status === 'CANCELED' && o.cancelReason).length; // Canceled log
+        const rate = drvOrders.length > 0 ? ((drvDelivered / drvOrders.length) * 100).toFixed(1) + '%' : 'N/A';
+
+        driverTbody.innerHTML += `
+          <tr>
+            <td><strong>${drv}</strong></td>
+            <td>${drvOrders.length}</td>
+            <td style="color: var(--success-color); font-weight: bold;">${drvDelivered}</td>
+            <td style="color: var(--danger-color); font-weight: bold;">${drvCanceled}</td>
+            <td><strong>${rate}</strong></td>
+          </tr>
+        `;
+      });
+
+      // Master Order Tracking Table
+      const masterTbody = document.getElementById('master-log-rows');
+      masterTbody.innerHTML = '';
+
+      filtered.forEach(o => {
+        masterTbody.innerHTML += `
+          <tr>
+            <td><code>${o.barcode}</code></td>
+            <td><strong>${o.customerName}</strong><br><small>${o.customerPhone}</small></td>
+            <td>${o.address}<br><small style="color: #b45309;">${o.notes || ''}</small></td>
+            <td>${o.assignedDriver || '<em style="color:#888;">Unassigned</em>'}</td>
+            <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+            <td>${o.cancelReason ? `<span style="color:red;">Canceled: ${o.cancelReason}</span>` : (o.photoProof || '-')}</td>
+          </tr>
+        `;
+      });
     }
 
-    // Initialize
-    renderMenu();
-    renderAdminTable();
-    renderLocations();
+    // Initialize Filter Date and Views
+    document.getElementById('kpi-date-filter').value = new Date().toISOString().split('T')[0];
+    renderStickers();
+    renderManagerDashboard();
   </script>
 </body>
 </html>
