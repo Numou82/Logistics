@@ -1,454 +1,459 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Fresh Diet Logistics Platform</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Barcode Generator Library -->
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <!-- HTML5 Camera Barcode Scanner -->
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <!-- PDF Generator -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-20">
-
-  <!-- TOP APP HEADER WITH NAVIGATION -->
-  <header class="sticky top-0 z-30 bg-slate-800/90 backdrop-blur-md border-b border-slate-700 px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center font-bold text-slate-950">
-        FD
-      </div>
-      <h1 class="font-bold text-lg text-white">FreshDiet Logistics</h1>
-    </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard Analysis</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS for Excel Export CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
-    <!-- NAVIGATION TABS -->
-    <nav class="flex bg-slate-900 p-1 rounded-xl border border-slate-700 text-xs font-semibold overflow-x-auto w-full md:w-auto">
-      <button onclick="switchTab('stickers')" id="tab-stickers" class="whitespace-nowrap px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition">
-        1. Stickers
-      </button>
-      <button onclick="switchTab('driver')" id="tab-driver" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
-        2. Driver Portal
-      </button>
-      <button onclick="switchTab('dashboard')" id="tab-dashboard" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
-        3. Dashboard
-      </button>
-    </nav>
-  </header>
-
-  <main class="max-w-5xl mx-auto p-4">
-
-    <!-- ========================================== -->
-    <!-- SECTION 1: SUBSCRIPTION STICKER GENERATOR -->
-    <!-- ========================================== -->
-    <section id="view-stickers" class="space-y-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-800 p-4 rounded-2xl border border-slate-700">
-        <div>
-          <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <i data-lucide="qr-code" class="text-emerald-400"></i> Sticker & Barcode Generator
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">Generate customer stickers with barcodes to attach to boxes before dispatch.</p>
-        </div>
-        <button onclick="downloadStickerPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition">
-          <i data-lucide="download" class="w-4 h-4"></i> Download Stickers PDF
-        </button>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- MANUAL SUBSCRIPTION ENTRY FORM -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-3 h-fit">
-          <h3 class="font-bold text-sm text-slate-200">Add Subscription</h3>
-          <form onsubmit="addSubscription(event)" class="space-y-2.5 text-xs">
-            <div>
-              <label class="block font-semibold text-slate-300">Customer Name</label>
-              <input type="text" id="cust-name" required placeholder="Sara Al-Kuwaiti" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white">
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block font-semibold text-slate-300">Mobile No</label>
-                <input type="text" id="cust-phone" required placeholder="+965 9988 7766" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white">
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-300">Customer ID</label>
-                <input type="text" id="cust-id" required placeholder="SUB-881" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white">
-              </div>
-            </div>
-            <div>
-              <label class="block font-semibold text-slate-300">Address</label>
-              <input type="text" id="cust-address" required placeholder="Salmiya, Blk 4, St 12" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white">
-            </div>
-            <div>
-              <label class="block font-semibold text-slate-300">Dietary / Special Notes</label>
-              <textarea id="cust-notes" rows="2" placeholder="No Dairy / Leave at door" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white"></textarea>
-            </div>
-            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-2 rounded-lg text-white">
-              + Generate Sticker
-            </button>
-          </form>
-        </div>
-
-        <!-- STICKER PREVIEW SHEET -->
-        <div class="lg:col-span-2 bg-slate-950 p-4 rounded-2xl border border-slate-800">
-          <div id="printable-sheet" class="bg-white text-slate-900 p-4 rounded-xl grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <!-- Dynamic stickers generated here -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- SECTION 2: DRIVER SCANNER & DELIVERY PORTAL -->
-    <!-- ========================================== -->
-    <section id="view-driver" class="hidden space-y-5">
-      <!-- DISPATCH SCAN TRIGGER -->
-      <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-5 rounded-2xl shadow-lg text-white">
-        <div class="flex justify-between items-start mb-2">
-          <div>
-            <h2 class="text-xl font-bold">Dispatch Area Scanner</h2>
-            <p class="text-emerald-100 text-xs">Scan box barcode to auto-assign order to your driver profile.</p>
-          </div>
-          <i data-lucide="qr-code" class="w-6 h-6"></i>
-        </div>
-        <button onclick="openScanner()" class="w-full mt-2 bg-white text-emerald-950 font-bold py-3 rounded-xl shadow flex items-center justify-center gap-2 hover:bg-slate-100 transition">
-          <i data-lucide="camera" class="w-5 h-5 text-emerald-600"></i> Scan Box Barcode Now
-        </button>
-      </div>
-
-      <!-- ASSIGNED DELIVERIES LIST -->
-      <div class="space-y-3">
-        <h3 class="font-bold text-slate-200 text-base flex items-center gap-2">
-          <i data-lucide="package" class="w-4 h-4 text-emerald-400"></i> My Active Deliveries
-        </h3>
-
-        <div id="driver-delivery-list" class="space-y-3">
-          <!-- Dynamically populated assigned delivery cards -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- SECTION 3: ANALYTICS & REPORTS DASHBOARD -->
-    <!-- ========================================== -->
-    <section id="view-dashboard" class="hidden space-y-6">
-      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
-        <h2 class="text-xl font-bold text-white flex items-center gap-2 mb-4">
-          <i data-lucide="bar-chart-2" class="text-emerald-400"></i> Operations Dashboard
-        </h2>
-        
-        <!-- TOP LEVEL KPIs -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center">
-            <p class="text-xs text-slate-400 font-bold mb-1">Total Boxes</p>
-            <p id="kpi-total" class="text-2xl font-bold text-white">0</p>
-          </div>
-          <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center">
-            <p class="text-xs text-slate-400 font-bold mb-1">Pending/Unassigned</p>
-            <p id="kpi-pending" class="text-2xl font-bold text-amber-400">0</p>
-          </div>
-          <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center">
-            <p class="text-xs text-slate-400 font-bold mb-1">Delivered</p>
-            <p id="kpi-delivered" class="text-2xl font-bold text-emerald-400">0</p>
-          </div>
-          <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center">
-            <p class="text-xs text-slate-400 font-bold mb-1">Cancelled</p>
-            <p id="kpi-cancelled" class="text-2xl font-bold text-rose-400">0</p>
-          </div>
-        </div>
-
-        <!-- DRIVER PERFORMANCE TABLE -->
-        <h3 class="font-bold text-sm text-slate-200 mb-3 border-b border-slate-700 pb-2">Driver Performance (Deliveries & Cancellations)</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm whitespace-nowrap">
-            <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
-              <tr>
-                <th class="p-3 rounded-tl-lg">Driver ID</th>
-                <th class="p-3">Currently Assigned</th>
-                <th class="p-3 text-emerald-400">Delivered</th>
-                <th class="p-3 text-rose-400 rounded-tr-lg">Cancelled</th>
-              </tr>
-            </thead>
-            <tbody id="driver-stats-table" class="divide-y divide-slate-700/50">
-              <!-- Dynamically populated driver stats -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- MODAL: CAMERA SCANNER -->
-  <div id="scanner-modal" class="fixed inset-0 bg-slate-950/95 z-50 hidden flex-col justify-between p-4">
-    <div class="flex justify-between items-center">
-      <h3 class="text-white font-bold text-lg">Scan Box Sticker Barcode</h3>
-      <button onclick="closeScanner()" class="p-2 bg-slate-800 text-slate-400 rounded-full hover:text-white">
-        <i data-lucide="x" class="w-6 h-6"></i>
-      </button>
-    </div>
-    <div class="my-auto">
-      <div id="reader" class="overflow-hidden rounded-2xl border-2 border-emerald-500"></div>
-    </div>
-    <button onclick="closeScanner()" class="w-full bg-slate-800 text-slate-300 py-3 rounded-xl font-semibold">
-      Close Camera
-    </button>
-  </div>
-
-  <!-- SCRIPT LOGIC -->
-  <script>
-    lucide.createIcons();
-
-    // Data State (Added some mock historical data to show the dashboard working)
-    let subscriptions = [
-      {
-        barcode: "BOX-20260728-1001",
-        customerId: "SUB-101",
-        name: "Sara Al-Kuwaiti",
-        phone: "+965 9988 7766",
-        address: "Salmiya, Block 4, Street 12, House 45",
-        notes: "Keto / Leave at doorstep.",
-        assignedTo: null,
-        status: "pending" 
-      },
-      {
-        barcode: "BOX-20260728-9901",
-        customerId: "SUB-808",
-        name: "Ahmed Al-Fahad",
-        phone: "+965 5544 3322",
-        address: "Hawally, Block 2, Street 1",
-        notes: "Standard Plan",
-        assignedTo: "driver_02",
-        status: "delivered" 
-      },
-      {
-        barcode: "BOX-20260728-8802",
-        customerId: "SUB-707",
-        name: "Noura M.",
-        phone: "+965 6677 8899",
-        address: "Jabriya, Block 1",
-        notes: "Customer travelling",
-        assignedTo: "driver_01",
-        status: "cancelled" 
-      }
-    ];
-
-    let currentDriver = "driver_01";
-    let html5QrcodeScanner = null;
-
-    // Switch Views
-    function switchTab(tab) {
-      document.getElementById('view-stickers').classList.toggle('hidden', tab !== 'stickers');
-      document.getElementById('view-driver').classList.toggle('hidden', tab !== 'driver');
-      document.getElementById('view-dashboard').classList.toggle('hidden', tab !== 'dashboard');
-      
-      const activeClass = 'whitespace-nowrap px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition';
-      const inactiveClass = 'whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
-      
-      document.getElementById('tab-stickers').className = tab === 'stickers' ? activeClass : inactiveClass;
-      document.getElementById('tab-driver').className = tab === 'driver' ? activeClass : inactiveClass;
-      document.getElementById('tab-dashboard').className = tab === 'dashboard' ? activeClass : inactiveClass;
-
-      // Re-render dashboard if selected
-      if(tab === 'dashboard') {
-        renderDashboard();
-      }
-    }
-
-    // Render Printable Stickers
-    function renderStickers() {
-      const sheet = document.getElementById('printable-sheet');
-      sheet.innerHTML = '';
-
-      // Only show pending stickers on the print sheet
-      const pendingStickers = subscriptions.filter(s => s.status === 'pending');
-
-      pendingStickers.forEach((sub, index) => {
-        sheet.innerHTML += `
-          <div class="border-2 border-dashed border-slate-300 rounded-xl p-3 bg-white space-y-2">
-            <div class="flex justify-between items-center border-b pb-1">
-              <span class="font-bold text-xs text-emerald-700">FreshDiet Express</span>
-              <span class="text-[10px] bg-slate-100 px-1 rounded font-mono">ID: ${sub.customerId}</span>
-            </div>
-            <div class="space-y-0.5">
-              <h4 class="font-bold text-sm leading-tight">${sub.name}</h4>
-              <p class="text-[11px] font-semibold text-slate-700">${sub.phone}</p>
-              <p class="text-[10px] text-slate-600">${sub.address}</p>
-              <p class="text-[10px] bg-amber-50 text-amber-900 p-1 rounded font-medium mt-1"><strong>Notes:</strong> ${sub.notes}</p>
-            </div>
-            <div class="pt-1 text-center border-t">
-              <svg id="barcode-${index}" class="mx-auto max-h-12 w-full"></svg>
-            </div>
-          </div>
-        `;
-      });
-
-      pendingStickers.forEach((sub, index) => {
-        JsBarcode(`#barcode-${index}`, sub.barcode, {
-          format: "CODE128",
-          height: 30,
-          fontSize: 10,
-          displayValue: true
-        });
-      });
-    }
-
-    // Add Subscription
-    function addSubscription(e) {
-      e.preventDefault();
-      const newSub = {
-        barcode: `BOX-20260728-${Math.floor(1000 + Math.random() * 9000)}`,
-        customerId: document.getElementById('cust-id').value,
-        name: document.getElementById('cust-name').value,
-        phone: document.getElementById('cust-phone').value,
-        address: document.getElementById('cust-address').value,
-        notes: document.getElementById('cust-notes').value,
-        assignedTo: null,
-        status: "pending"
-      };
-
-      subscriptions.push(newSub);
-      renderStickers();
-      renderDashboard(); // Update stats
-      e.target.reset();
-    }
-
-    // Download PDF Sheet
-    function downloadStickerPDF() {
-      const element = document.getElementById('printable-sheet');
-      html2pdf().from(element).save('FreshDiet_Stickers.pdf');
-    }
-
-    // Barcode Scanner & Driver Assignment
-    function openScanner() {
-      document.getElementById('scanner-modal').classList.remove('hidden');
-      document.getElementById('scanner-modal').classList.add('flex');
-      html5QrcodeScanner = new Html5Qrcode("reader");
-      html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 }, onScanSuccess);
-    }
-
-    function closeScanner() {
-      if (html5QrcodeScanner) {
-        html5QrcodeScanner.stop().then(() => {
-          document.getElementById('scanner-modal').classList.add('hidden');
-        });
-      }
-    }
-
-    function onScanSuccess(decodedBarcode) {
-      closeScanner();
-      const box = subscriptions.find(s => s.barcode === decodedBarcode);
-      if (box) {
-        if(box.status !== 'pending') {
-          alert(`Box is currently marked as: ${box.status}`);
-          return;
+    <style>
+        :root {
+            --primary-brown: #8B4513;
+            --hover-brown: #A0522D;
+            --bg-color: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --border-color: #E2E8F0;
+            --text-main: #333333;
         }
-        box.assignedTo = currentDriver;
-        box.status = "assigned";
-        alert(`Box ${decodedBarcode} Auto-Assigned to ${currentDriver}!`);
-        renderDriverDeliveries();
-        renderDashboard();
-      } else {
-        alert("Barcode not found in subscriptions!");
-      }
-    }
 
-    // Update Box Status (Delivered or Cancelled)
-    function updateDeliveryStatus(barcode, newStatus) {
-      const box = subscriptions.find(s => s.barcode === barcode);
-      if (box) {
-        box.status = newStatus;
-        renderDriverDeliveries();
-        renderDashboard();
-      }
-    }
-
-    // Render Driver Deliveries List
-    function renderDriverDeliveries() {
-      const list = document.getElementById('driver-delivery-list');
-      const assignedBoxes = subscriptions.filter(s => s.assignedTo === currentDriver && s.status === 'assigned');
-      
-      list.innerHTML = assignedBoxes.map(sub => `
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-3">
-          <div class="flex justify-between border-b border-slate-700 pb-2">
-            <span class="text-xs font-mono text-emerald-400">${sub.barcode}</span>
-            <span class="text-xs bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded font-bold">In Transit</span>
-          </div>
-          <div>
-            <h4 class="font-bold text-white text-base">${sub.name}</h4>
-            <p class="text-xs text-slate-300 mt-1">📱 ${sub.phone}</p>
-            <p class="text-xs text-slate-300">📍 ${sub.address}</p>
-            <p class="text-xs bg-slate-900 p-2 rounded text-amber-400 mt-2">Notes: ${sub.notes}</p>
-          </div>
-          <!-- Action Buttons -->
-          <div class="flex gap-2 pt-2">
-            <button onclick="updateDeliveryStatus('${sub.barcode}', 'delivered')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded-lg transition">
-              ✓ Delivered
-            </button>
-            <button onclick="updateDeliveryStatus('${sub.barcode}', 'cancelled')" class="flex-1 bg-slate-700 hover:bg-rose-600 text-white text-xs font-bold py-2 rounded-lg transition">
-              ✕ Cancel
-            </button>
-          </div>
-        </div>
-      `).join('') || '<p class="text-xs text-slate-400 text-center py-6 border border-dashed border-slate-700 rounded-xl">No active deliveries. Scan a box to assign!</p>';
-    }
-
-    // Render Analytics Dashboard
-    function renderDashboard() {
-      // 1. Calculate Top-Level KPIs
-      const total = subscriptions.length;
-      const pending = subscriptions.filter(s => s.status === 'pending').length;
-      const delivered = subscriptions.filter(s => s.status === 'delivered').length;
-      const cancelled = subscriptions.filter(s => s.status === 'cancelled').length;
-
-      document.getElementById('kpi-total').textContent = total;
-      document.getElementById('kpi-pending').textContent = pending;
-      document.getElementById('kpi-delivered').textContent = delivered;
-      document.getElementById('kpi-cancelled').textContent = cancelled;
-
-      // 2. Calculate Driver Statistics
-      const driverStats = {};
-      
-      subscriptions.forEach(sub => {
-        if (sub.assignedTo) {
-          if (!driverStats[sub.assignedTo]) {
-            driverStats[sub.assignedTo] = { assigned: 0, delivered: 0, cancelled: 0 };
-          }
-          if (sub.status === 'assigned') driverStats[sub.assignedTo].assigned++;
-          if (sub.status === 'delivered') driverStats[sub.assignedTo].delivered++;
-          if (sub.status === 'cancelled') driverStats[sub.assignedTo].cancelled++;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-      });
 
-      // 3. Populate Table
-      const tableBody = document.getElementById('driver-stats-table');
-      tableBody.innerHTML = '';
-      
-      const drivers = Object.keys(driverStats);
-      
-      if (drivers.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No driver data available yet.</td></tr>`;
-      } else {
-        drivers.forEach(driver => {
-          const stats = driverStats[driver];
-          tableBody.innerHTML += `
-            <tr class="hover:bg-slate-800/50 transition">
-              <td class="p-3 font-semibold text-white">${driver}</td>
-              <td class="p-3 text-slate-300">${stats.assigned}</td>
-              <td class="p-3 font-bold text-emerald-400">${stats.delivered}</td>
-              <td class="p-3 font-bold text-rose-400">${stats.cancelled}</td>
-            </tr>
-          `;
-        });
-      }
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+        }
 
-    // Initialize
-    renderStickers();
-    renderDriverDeliveries();
-    renderDashboard();
-  </script>
+        .dashboard-header {
+            margin-bottom: 20px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 24px;
+            color: #2D3748;
+        }
+
+        /* Top Controls: Slicers Row */
+        .slicers-container {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 15px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .slicer-group {
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slicer-group label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #4A5568;
+        }
+
+        .slicer-group select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #FFF;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slicer-group select:focus {
+            border-color: var(--primary-brown);
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active {
+            color: var(--primary-brown);
+            border-bottom-color: var(--primary-brown);
+        }
+
+        /* Tab Content Display */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* KPI & Visuals Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary-brown);
+        }
+
+        .kpi-card h3 {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .kpi-card p {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1A202C;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Data Tables Styling */
+        .table-action-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .btn-download {
+            background-color: var(--primary-brown);
+            color: #FFF;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-download:hover {
+            background-color: var(--hover-brown);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: #EDF2F7;
+            color: #2D3748;
+            padding: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background-color: #F7FAFC;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-header">
+        <h1>Sales & Item Performance Dashboard</h1>
+    </div>
+
+    <!-- Slicers / Filters Section (Single Row) -->
+    <div class="slicers-container">
+        <div class="slicer-group">
+            <label for="slicer-year">Year</label>
+            <select id="slicer-year">
+                <option value="All">All Years</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+            </select>
+        </div>
+        <div class="slicer-group">
+            <label for="slicer-month">Month</label>
+            <select id="slicer-month">
+                <option value="All">All Months</option>
+                <option value="Jan">Jan</option>
+                <option value="Feb">Feb</option>
+                <option value="Mar">Mar</option>
+                <option value="Apr">Apr</option>
+                <option value="May">May</option>
+                <option value="Jun">Jun</option>
+                <option value="Jul">Jul</option>
+                <option value="Aug">Aug</option>
+                <option value="Sep">Sep</option>
+                <option value="Oct">Oct</option>
+                <option value="Nov">Nov</option>
+                <option value="Dec">Dec</option>
+            </select>
+        </div>
+        <div class="slicer-group">
+            <label for="slicer-department">Department</label>
+            <select id="slicer-department">
+                <option value="All">All Departments</option>
+                <option value="Logistics">Logistics</option>
+                <option value="Procurement">Procurement</option>
+                <option value="Production">Production</option>
+                <option value="Quality Control">Quality Control</option>
+                <option value="Sales">Sales</option>
+            </select>
+        </div>
+        <div class="slicer-group">
+            <label for="slicer-governate">Governate</label>
+            <select id="slicer-governate">
+                <option value="All">All Governates</option>
+                <option value="Capital">Capital</option>
+                <option value="Hawalli">Hawalli</option>
+                <option value="Farwaniya">Farwaniya</option>
+                <option value="Ahmadi">Ahmadi</option>
+                <option value="Jahra">Jahra</option>
+            </select>
+        </div>
+        <div class="slicer-group">
+            <label for="slicer-category">Product Category</label>
+            <select id="slicer-category">
+                <option value="All">All Categories</option>
+                <option value="Bakery">Bakery</option>
+                <option value="Beverages">Beverages</option>
+                <option value="Dairy">Dairy</option>
+                <option value="Frozen Foods">Frozen Foods</option>
+                <option value="Snacks">Snacks</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- View Navigation Tabs -->
+    <div class="tabs">
+        <button class="tab-button active" onclick="switchTab('analysis')">Item Performance Analysis</button>
+        <button class="tab-button" onclick="switchTab('sales')">Sales Data</button>
+        <button class="tab-button" onclick="switchTab('returns')">Returns Data</button>
+    </div>
+
+    <!-- Option 1: Performance Analysis View -->
+    <div id="tab-analysis" class="tab-content active">
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <h3>Total Gross Revenue</h3>
+                <p>$124,500.00</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Total Quantity Sold</h3>
+                <p>12,480 Units</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Total Returns</h3>
+                <p>$3,120.00</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Net Sales</h3>
+                <p>$121,380.00</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3 style="margin-bottom: 15px; color: #4A5568;">Item Name Performance</h3>
+            <canvas id="itemPerformanceChart" height="100"></canvas>
+        </div>
+    </div>
+
+    <!-- Option 2: Sales Data View -->
+    <div id="tab-sales" class="tab-content">
+        <div class="table-action-bar">
+            <button class="btn-download" onclick="exportTableToExcel('sales-table', 'Sales_Report')">Download Sales Excel</button>
+        </div>
+        <div class="table-responsive">
+            <table id="sales-table">
+                <thead>
+                    <tr>
+                        <th>Sent Date</th>
+                        <th>Invoice No</th>
+                        <th>Account</th>
+                        <th>Brand</th>
+                        <th>Year</th>
+                        <th>Branch Name</th>
+                        <th>Barcode</th>
+                        <th>Item Name</th>
+                        <th>Sent Qty</th>
+                        <th>Unit Price</th>
+                        <th>RSP</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-01-15</td>
+                        <td>INV-1001</td>
+                        <td>ACC-001</td>
+                        <td>Brand A</td>
+                        <td>2024</td>
+                        <td>Main Branch</td>
+                        <td>123456789012</td>
+                        <td>Croissant Pack</td>
+                        <td>50</td>
+                        <td>2.00</td>
+                        <td>2.50</td>
+                        <td>100.00</td>
+                    </tr>
+                    <tr>
+                        <td>2024-01-18</td>
+                        <td>INV-1002</td>
+                        <td>ACC-002</td>
+                        <td>Brand B</td>
+                        <td>2024</td>
+                        <td>North Branch</td>
+                        <td>123456789013</td>
+                        <td>Fresh Milk 1L</td>
+                        <td>120</td>
+                        <td>1.50</td>
+                        <td>1.80</td>
+                        <td>180.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Option 3: Return Data View -->
+    <div id="tab-returns" class="tab-content">
+        <div class="table-action-bar">
+            <button class="btn-download" onclick="exportTableToExcel('returns-table', 'Returns_Report')">Download Returns Excel</button>
+        </div>
+        <div class="table-responsive">
+            <table id="returns-table">
+                <thead>
+                    <tr>
+                        <th>Return Date</th>
+                        <th>Return Invoice No</th>
+                        <th>Account</th>
+                        <th>Brand</th>
+                        <th>Branch Name</th>
+                        <th>Barcode</th>
+                        <th>Item Name</th>
+                        <th>Unit Price</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-01-20</td>
+                        <td>RET-5001</td>
+                        <td>ACC-001</td>
+                        <td>Brand A</td>
+                        <td>Main Branch</td>
+                        <td>123456789012</td>
+                        <td>Croissant Pack</td>
+                        <td>2.00</td>
+                        <td>10.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Switch View Tabs
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Export Tables to Excel
+        function exportTableToExcel(tableID, filename = '') {
+            const table = document.getElementById(tableID);
+            const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+            XLSX.writeFile(wb, filename ? `${filename}.xlsx` : 'Report.xlsx');
+        }
+
+        // Initialize Chart.js Bar Chart for Item Performance
+        window.onload = function() {
+            const ctx = document.getElementById('itemPerformanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Croissant Pack', 'Fresh Milk 1L', 'Orange Juice 500ml', 'Potato Chips', 'Cheddar Cheese'],
+                    datasets: [{
+                        label: 'Total Revenue ($)',
+                        data: [12000, 19000, 8000, 15000, 22000],
+                        backgroundColor: '#8B4513',
+                        borderColor: '#A0522D',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        };
+    </script>
 </body>
 </html>
