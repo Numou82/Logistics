@@ -83,30 +83,64 @@
             border-color: var(--primary-brown);
         }
 
-        /* Navigation Tabs */
-        .tabs {
+        /* Dashboard Main Layout (Vertical Sidebar + Main View) */
+        .dashboard-layout {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
+            gap: 20px;
+            align-items: flex-start;
         }
 
-        .tab-button {
-            padding: 10px 20px;
+        /* Vertical Navigation Sidebar on Left */
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            width: 220px;
+            flex-shrink: 0;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #A0AEC0;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            background: #F7FAFC;
+        }
+
+        .tab-button-vertical {
+            padding: 14px 18px;
             border: none;
-            background: none;
-            font-size: 15px;
+            background: transparent;
+            text-align: left;
+            font-size: 14px;
             font-weight: 600;
-            color: #718096;
+            color: #4A5568;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
+            border-left: 4px solid transparent;
             transition: all 0.2s ease;
         }
 
-        .tab-button.active {
+        .tab-button-vertical:hover {
+            background-color: #EDF2F7;
             color: var(--primary-brown);
-            border-bottom-color: var(--primary-brown);
+        }
+
+        .tab-button-vertical.active {
+            color: var(--primary-brown);
+            background-color: #FFF5F0;
+            border-left-color: var(--primary-brown);
+        }
+
+        /* Main View Container */
+        .main-content {
+            flex-grow: 1;
+            min-width: 0;
         }
 
         /* Tab Content Display */
@@ -155,10 +189,16 @@
         }
 
         /* Data Tables Styling */
-        .table-action-bar {
+        .table-header-container {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
+        }
+
+        .table-header-container h2 {
+            font-size: 18px;
+            color: #2D3748;
         }
 
         .btn-download {
@@ -217,7 +257,7 @@
         <h1>Sales & Item Performance Dashboard</h1>
     </div>
 
-    <!-- Slicers / Filters Section (Single Row) -->
+    <!-- Slicers / Filters Section (Single Top Row) -->
     <div class="slicers-container">
         <div class="slicer-group">
             <label for="slicer-year">Year</label>
@@ -281,139 +321,151 @@
         </div>
     </div>
 
-    <!-- View Navigation Tabs -->
-    <div class="tabs">
-        <button class="tab-button active" onclick="switchTab('analysis')">Item Performance Analysis</button>
-        <button class="tab-button" onclick="switchTab('sales')">Sales Data</button>
-        <button class="tab-button" onclick="switchTab('returns')">Returns Data</button>
-    </div>
+    <!-- Main Layout Area -->
+    <div class="dashboard-layout">
+        
+        <!-- Vertical Sidebar on Left -->
+        <nav class="sidebar-nav">
+            <div class="sidebar-title">Reports & Views</div>
+            <button class="tab-button-vertical active" onclick="switchTab('analysis')">Item Performance</button>
+            <button class="tab-button-vertical" onclick="switchTab('sales')">Sales Data</button>
+            <button class="tab-button-vertical" onclick="switchTab('returns')">Returns Data</button>
+        </nav>
 
-    <!-- Option 1: Performance Analysis View -->
-    <div id="tab-analysis" class="tab-content active">
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <h3>Total Gross Revenue</h3>
-                <p>$124,500.00</p>
-            </div>
-            <div class="kpi-card">
-                <h3>Total Quantity Sold</h3>
-                <p>12,480 Units</p>
-            </div>
-            <div class="kpi-card">
-                <h3>Total Returns</h3>
-                <p>$3,120.00</p>
-            </div>
-            <div class="kpi-card">
-                <h3>Net Sales</h3>
-                <p>$121,380.00</p>
-            </div>
-        </div>
+        <!-- Dynamic Main Content Area -->
+        <div class="main-content">
+            
+            <!-- Option 1: Performance Analysis View -->
+            <div id="tab-analysis" class="tab-content active">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <h3>Total Gross Revenue</h3>
+                        <p>$124,500.00</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h3>Total Quantity Sold</h3>
+                        <p>12,480 Units</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h3>Total Returns</h3>
+                        <p>$3,120.00</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h3>Net Sales</h3>
+                        <p>$121,380.00</p>
+                    </div>
+                </div>
 
-        <div class="chart-container">
-            <h3 style="margin-bottom: 15px; color: #4A5568;">Item Name Performance</h3>
-            <canvas id="itemPerformanceChart" height="100"></canvas>
-        </div>
-    </div>
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 15px; color: #4A5568;">Item Name Performance</h3>
+                    <canvas id="itemPerformanceChart" height="100"></canvas>
+                </div>
+            </div>
 
-    <!-- Option 2: Sales Data View -->
-    <div id="tab-sales" class="tab-content">
-        <div class="table-action-bar">
-            <button class="btn-download" onclick="exportTableToExcel('sales-table', 'Sales_Report')">Download Sales Excel</button>
-        </div>
-        <div class="table-responsive">
-            <table id="sales-table">
-                <thead>
-                    <tr>
-                        <th>Sent Date</th>
-                        <th>Invoice No</th>
-                        <th>Account</th>
-                        <th>Brand</th>
-                        <th>Year</th>
-                        <th>Branch Name</th>
-                        <th>Barcode</th>
-                        <th>Item Name</th>
-                        <th>Sent Qty</th>
-                        <th>Unit Price</th>
-                        <th>RSP</th>
-                        <th>Total Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>2024-01-15</td>
-                        <td>INV-1001</td>
-                        <td>ACC-001</td>
-                        <td>Brand A</td>
-                        <td>2024</td>
-                        <td>Main Branch</td>
-                        <td>123456789012</td>
-                        <td>Croissant Pack</td>
-                        <td>50</td>
-                        <td>2.00</td>
-                        <td>2.50</td>
-                        <td>100.00</td>
-                    </tr>
-                    <tr>
-                        <td>2024-01-18</td>
-                        <td>INV-1002</td>
-                        <td>ACC-002</td>
-                        <td>Brand B</td>
-                        <td>2024</td>
-                        <td>North Branch</td>
-                        <td>123456789013</td>
-                        <td>Fresh Milk 1L</td>
-                        <td>120</td>
-                        <td>1.50</td>
-                        <td>1.80</td>
-                        <td>180.00</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <!-- Option 2: Sales Data View -->
+            <div id="tab-sales" class="tab-content">
+                <div class="table-header-container">
+                    <h2>Sales Data Report</h2>
+                    <button class="btn-download" onclick="exportTableToExcel('sales-table', 'Sales_Report')">Download Sales Excel</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="sales-table">
+                        <thead>
+                            <tr>
+                                <th>Sent Date</th>
+                                <th>Invoice No</th>
+                                <th>Account</th>
+                                <th>Brand</th>
+                                <th>Year</th>
+                                <th>Branch Name</th>
+                                <th>Barcode</th>
+                                <th>Item Name</th>
+                                <th>Sent Qty</th>
+                                <th>Unit Price</th>
+                                <th>RSP</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-01-15</td>
+                                <td>INV-1001</td>
+                                <td>ACC-001</td>
+                                <td>Brand A</td>
+                                <td>2024</td>
+                                <td>Main Branch</td>
+                                <td>123456789012</td>
+                                <td>Croissant Pack</td>
+                                <td>50</td>
+                                <td>2.00</td>
+                                <td>2.50</td>
+                                <td>100.00</td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-18</td>
+                                <td>INV-1002</td>
+                                <td>ACC-002</td>
+                                <td>Brand B</td>
+                                <td>2024</td>
+                                <td>North Branch</td>
+                                <td>123456789013</td>
+                                <td>Fresh Milk 1L</td>
+                                <td>120</td>
+                                <td>1.50</td>
+                                <td>1.80</td>
+                                <td>180.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    <!-- Option 3: Return Data View -->
-    <div id="tab-returns" class="tab-content">
-        <div class="table-action-bar">
-            <button class="btn-download" onclick="exportTableToExcel('returns-table', 'Returns_Report')">Download Returns Excel</button>
-        </div>
-        <div class="table-responsive">
-            <table id="returns-table">
-                <thead>
-                    <tr>
-                        <th>Return Date</th>
-                        <th>Return Invoice No</th>
-                        <th>Account</th>
-                        <th>Brand</th>
-                        <th>Branch Name</th>
-                        <th>Barcode</th>
-                        <th>Item Name</th>
-                        <th>Unit Price</th>
-                        <th>Total Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>2024-01-20</td>
-                        <td>RET-5001</td>
-                        <td>ACC-001</td>
-                        <td>Brand A</td>
-                        <td>Main Branch</td>
-                        <td>123456789012</td>
-                        <td>Croissant Pack</td>
-                        <td>2.00</td>
-                        <td>10.00</td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Option 3: Return Data View -->
+            <div id="tab-returns" class="tab-content">
+                <div class="table-header-container">
+                    <h2>Returns Data Report</h2>
+                    <button class="btn-download" onclick="exportTableToExcel('returns-table', 'Returns_Report')">Download Returns Excel</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="returns-table">
+                        <thead>
+                            <tr>
+                                <th>Return Date</th>
+                                <th>Return Invoice No</th>
+                                <th>Account</th>
+                                <th>Brand</th>
+                                <th>Branch Name</th>
+                                <th>Barcode</th>
+                                <th>Item Name</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-01-20</td>
+                                <td>RET-5001</td>
+                                <td>ACC-001</td>
+                                <td>Brand A</td>
+                                <td>Main Branch</td>
+                                <td>123456789012</td>
+                                <td>Croissant Pack</td>
+                                <td>2.00</td>
+                                <td>10.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // Switch View Tabs
+        // Switch View Tabs via Vertical Left Navigation
         function switchTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
-            const buttons = document.querySelectorAll('.tab-button');
+            const buttons = document.querySelectorAll('.tab-button-vertical');
             
             tabs.forEach(tab => tab.classList.remove('active'));
             buttons.forEach(btn => btn.classList.remove('active'));
