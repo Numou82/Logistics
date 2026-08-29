@@ -1,0 +1,96 @@
+{
+  "app": "Light Fields Foodstuff Management System",
+  "type": "MASTER_LIST",
+  "version": 1,
+  "exportedAt": "2026-08-29T00:00:00.000Z",
+  "masterData": [
+    {
+      "Item Code": "FB001",
+      "Item Name": "Basmati Rice 5kg",
+      "UOM": "Bag",
+      "Origin": "India",
+      "Price (KWD)": 5.25,
+      "Supplier": "Global Foods Ltd"
+    },
+    {
+      "Item Code": "FB002",
+      "Item Name": "Basmati Rice 5kg",
+      "UOM": "Bag",
+      "Origin": "Pakistan",
+      "Price (KWD)": 4.85,
+      "Supplier": "Asia Grain Supply"
+    },
+    {
+      "Item Code": "FB003",
+      "Item Name": "Basmati Rice 5kg Premium",
+      "UOM": "Bag",
+      "Origin": "India",
+      "Price (KWD)": 6.75,
+      "Supplier": "Premium Harvest"
+    },
+    {
+      "Item Code": "FB004",
+      "Item Name": "Jasmine Rice 5kg",
+      "UOM": "Bag",
+      "Origin": "Thailand",
+      "Price (KWD)": 5.8,
+      "Supplier": "Thai Food Supply"
+    },
+    {
+      "Item Code": "FB006",
+      "Item Name": "Wheat Flour",
+      "UOM": "Kg",
+      "Origin": "Australia",
+      "Price (KWD)": 0.52,
+      "Supplier": "Grain World"
+    },
+    {
+      "Item Code": "FB007",
+      "Item Name": "Wheat Flour",
+      "UOM": "Kg",
+      "Origin": "India",
+      "Price (KWD)": 0.41,
+      "Supplier": "Sunrise Trading"
+    },
+    {
+      "Item Code": "FB008",
+      "Item Name": "White Sugar",
+      "UOM": "Kg",
+      "Origin": "Brazil",
+      "Price (KWD)": 0.36,
+      "Supplier": "Sweet Harvest Co"
+    },
+    {
+      "Item Code": "FB013",
+      "Item Name": "Olive Oil Extra Virgin",
+      "UOM": "Litre",
+      "Origin": "Spain",
+      "Price (KWD)": 3,
+      "Supplier": "Mediterranean Imports"
+    },
+    {
+      "Item Code": "FB014",
+      "Item Name": "Olive Oil Extra Virgin",
+      "UOM": "Litre",
+      "Origin": "Italy",
+      "Price (KWD)": 3.9,
+      "Supplier": "Italian Pantry"
+    },
+    {
+      "Item Code": "FB033",
+      "Item Name": "Chicken Breast",
+      "UOM": "Kg",
+      "Origin": "Brazil",
+      "Price (KWD)": 2.05,
+      "Supplier": "Prime Poultry"
+    },
+    {
+      "Item Code": "FB034",
+      "Item Name": "Chicken Breast",
+      "UOM": "Kg",
+      "Origin": "USA",
+      "Price (KWD)": 2.7,
+      "Supplier": "American Meats"
+    }
+  ]
+}
