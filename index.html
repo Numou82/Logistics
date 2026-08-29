@@ -3,220 +3,1012 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hanor - Refrigeration & Air Conditioning HTML Template</title>
+    <title>Light Fields Foodstuff - Management System</title>
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/img/favicon.png">
-    
-    <!-- CSS Dependencies -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/fontawesome.all.min.css">
-    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="assets/css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="assets/css/animate.css">
-    <link rel="stylesheet" href="assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="assets/css/meanmenu.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/responsive.css">
+    <!-- Google Font for Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- External CSS File -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- SheetJS for processing Excel files -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-    <!-- Preloader -->
-    <div class="preloader">
-        <div class="loader">
-            <div class="shadow"></div>
-            <div class="box"></div>
+<!-- Login Modal -->
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+        <h2>Light Fields Foodstuff</h2>
+        <p>Login to Access Management System</p>
+        <select id="userSelect" class="form-control">
+            <option value="Admin">Admin (Full Control)</option>
+            <option value="Walid">Walid (COO)</option>
+            <option value="Larry">Larry (Store Guy - Store Portal Only)</option>
+        </select>
+        <input type="password" id="userPassword" class="form-control" placeholder="Enter Password" onkeyup="if(event.key==='Enter') loginUser()">
+        <div id="loginError" class="error-msg" style="color: var(--danger); font-size: 13px; margin-bottom: 10px; display: none;">Incorrect password!</div>
+        <button class="btn" style="width: 100%; justify-content: center;" onclick="loginUser()">Login</button>
+    </div>
+</div>
+
+<!-- Modal Dialog for Order & Supplier Items Details -->
+<div id="orderDetailModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 id="modalTitle" style="margin:0;">Details</h3>
+            <span class="close-btn" style="cursor:pointer; font-size:24px; font-weight:bold; color:#888;" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead id="modalTableHead"></thead>
+                <tbody id="modalTableBody"></tbody>
+            </table>
         </div>
     </div>
+</div>
 
-    <!-- Header Section -->
-    <header class="header-area">
-        <div class="top-header">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 col-md-8">
-                        <ul class="top-header-info">
-                            <li><i class="fas fa-phone-alt"></i> <a href="tel:+1234567890">+1 234 567 890</a></li>
-                            <li><i class="fas fa-envelope"></i> <a href="mailto:info@example.com">info@example.com</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-6 col-md-4">
-                        <ul class="top-header-social">
-                            <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                            <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                            <li><a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-                            <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+<!-- Modal Popup for Adding Single Master Item -->
+<div id="addMasterItemModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card" style="max-width: 500px;">
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">➕ Add New Master Item</h3>
+            <span class="close-btn" style="cursor:pointer; font-size:24px; font-weight:bold; color:#888;" onclick="closeAddMasterModal()">&times;</span>
         </div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:bold;">Item Code *</label>
+            <input type="text" id="addMasterCode" class="form-control" placeholder="e.g. FB035">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:bold;">Item Name *</label>
+            <input type="text" id="addMasterName" class="form-control" placeholder="e.g. Basmati Rice 10kg">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:bold;">UOM (Unit of Measure) *</label>
+            <input type="text" id="addMasterUom" class="form-control" placeholder="e.g. Bag, Kg, Litre">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:bold;">Origin (Country)</label>
+            <input type="text" id="addMasterOrigin" class="form-control" placeholder="e.g. India">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:bold;">Price (KWD)</label>
+            <input type="number" step="0.001" id="addMasterPrice" class="form-control" placeholder="0.000">
+        </div>
+        <div class="form-group" style="margin-bottom:15px;">
+            <label style="font-size:12px; font-weight:bold;">Supplier Name *</label>
+            <input type="text" id="addMasterSupplier" class="form-control" placeholder="e.g. Global Foods Ltd">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="btn btn-gray" onclick="closeAddMasterModal()">Cancel</button>
+            <button class="btn btn-green" onclick="saveSingleMasterItem()">Save Item</button>
+        </div>
+    </div>
+</div>
 
-        <!-- Navbar Section -->
-        <div class="navbar-area">
-            <div class="main-responsive-nav">
-                <div class="container">
-                    <div class="main-responsive-menu">
-                        <div class="logo">
-                            <a href="index.html">
-                                <img src="assets/img/logo.png" alt="logo">
-                            </a>
-                        </div>
-                    </div>
-                </div>
+<!-- Left Vertical Sidebar Navigation -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="brand-mark">LF</div>
+        <h2 style="margin:0; font-size:18px; color:#fff;">Light Fields</h2>
+        <p style="margin:5px 0 0 0; font-size:12px; color:#94a3b8;">Foodstuff Operations Portal</p>
+    </div>
+    <ul class="nav-list" id="sidebarNavList">
+        <li class="nav-item active admin-only purchase-only" onclick="switchTab('dashboard-tab', this)">
+            <span>📈</span> Executive Dashboard
+        </li>
+        <li class="nav-item store-allowed" id="orderTrackerNavItem" onclick="switchTab('order-tracker-tab', this)">
+            <span>📦</span> Store Order Tracker
+        </li>
+        <li class="nav-item admin-only purchase-only" onclick="switchTab('supplier-tab', this)">
+            <span>📊</span> Supplier Analysis
+        </li>
+        <li class="nav-item admin-only purchase-only" onclick="switchTab('items-tab', this)">
+            <span>📋</span> Item Comparison
+        </li>
+        <li class="nav-item admin-only purchase-only" onclick="switchTab('request-tab', this)">
+            <span>🛒</span> Store Request & Quotes
+        </li>
+    </ul>
+    <div style="padding:15px 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size:12px;">
+        <div style="background: rgba(255, 255, 255, 0.1); padding:6px 10px; border-radius:20px; font-weight:600; text-align:center; margin-bottom:8px;">
+            👤 <span id="currentUserDisplay">Guest</span>
+        </div>
+        <button class="btn btn-orange" style="width:100%; font-size:12px; justify-content:center;" onclick="location.reload()">🔒 Logout</button>
+    </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-wrapper">
+    <header>
+        <h1 id="pageTitle" style="margin:0; font-size:20px; color:var(--primary);">Executive Dashboard</h1>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:12px; color:var(--text-muted); background:var(--bg-light); border:1px solid var(--border-color); padding:8px 12px; border-radius:20px;" id="masterStatus">Master list: 0 items</span>
+            <div id="sharedMasterContainer" style="display:flex; gap:6px; align-items:center;">
+                <button id="exportMasterBtn" class="btn btn-outline" onclick="exportSharedMasterList()" style="display:none; font-size:12px;">⬇ Share Master List</button>
+                <label id="importMasterLabel" for="sharedMasterFile" class="btn btn-outline" style="display:none; cursor:pointer; font-size:12px;">⬆ Load Master List</label>
+                <input type="file" id="sharedMasterFile" accept=".json" style="display:none;" onchange="importSharedMasterList(event)">
             </div>
-
-            <div class="main-nav">
-                <div class="container">
-                    <nav class="navbar navbar-expand-md navbar-light">
-                        <a class="navbar-brand" href="index.html">
-                            <img src="assets/img/logo.png" alt="logo">
-                        </a>
-
-                        <div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
-                                <li class="nav-item"><a href="about.html" class="nav-link">About Us</a></li>
-                                <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
-                                <li class="nav-item"><a href="products.html" class="nav-link">Products</a></li>
-                                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                            </ul>
-
-                            <div class="others-options">
-                                <a href="contact.html" class="default-btn">Get A Quote <span></span></a>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
+            <div id="uploadMasterContainer" style="display:flex; gap:6px; align-items:center;">
+                <button class="btn" style="font-size:12px;" onclick="openAddMasterModal()">➕ Add Item</button>
+                <label for="excelFile" class="btn btn-green" style="font-size:12px; cursor:pointer;">📂 Upload Master Sheet</label>
+                <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" style="display:none;" onchange="handleMasterFileUpload(event)">
             </div>
         </div>
     </header>
 
-    <!-- Main Banner -->
-    <div class="main-banner">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-lg-6 col-md-12">
-                    <div class="main-banner-content">
-                        <h1>Professional Refrigeration & Air Conditioning Services</h1>
-                        <p>Providing high-quality cooling solutions, maintenance, and equipment for commercial and industrial needs.</p>
-                        <div class="banner-btn">
-                            <a href="services.html" class="default-btn">Our Services <span></span></a>
-                            <a href="contact.html" class="optional-btn">Contact Us <span></span></a>
-                        </div>
+    <div style="padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%;">
+
+        <!-- TAB 0: EXECUTIVE DASHBOARD -->
+        <div id="dashboard-tab" class="tab-content" style="display:block;">
+            <div class="dashboard-hero">
+                <h2>Operations Command Center</h2>
+                <p>Monitor store orders, master catalog coverage, supplier performance and purchasing activity from one professional view.</p>
+            </div>
+
+            <div style="background: var(--card-bg); padding: 15px 20px; border-radius: var(--radius); border:1px solid var(--border-color); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div style="font-weight:bold; color:var(--primary); font-size:15px;">📅 Dashboard Global Filter</div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <label style="font-size:13px; font-weight:600;">Select Date:</label>
+                    <input type="date" id="dashDateFilter" class="form-control" style="margin-bottom:0;" onchange="initDashboard()">
+                    <button class="btn" style="padding:8px 14px; font-size:12px;" onclick="clearDashDateFilter()">Show All Time</button>
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="kpi-grid">
+                <div class="kpi-card" style="border-left: 4px solid #3b82f6;" onclick="openOrdersModal('All')">
+                    <h3>Total Store Orders</h3>
+                    <div class="value" id="kpiTotalOrders">0</div>
+                </div>
+                <div class="kpi-card" style="border-left: 4px solid #f59e0b;" onclick="openOrdersModal('Pending')">
+                    <h3>Pending Orders</h3>
+                    <div class="value" id="kpiPendingOrders">0</div>
+                </div>
+                <div class="kpi-card" style="border-left: 4px solid #10b981;" onclick="openOrdersModal('Received')">
+                    <h3>Received Orders</h3>
+                    <div class="value" id="kpiReceivedOrders">0</div>
+                </div>
+                <div class="kpi-card" style="border-left: 4px solid #06b6d4;">
+                    <h3>Order Fulfill Rate</h3>
+                    <div class="value" id="kpiFulfillRate">0%</div>
+                </div>
+                <div class="kpi-card" style="border-left: 4px solid #8b5cf6;">
+                    <h3>Master Items</h3>
+                    <div class="value" id="kpiTotalItems">0</div>
+                </div>
+                <div class="kpi-card" style="border-left: 4px solid #ef4444;">
+                    <h3>Active Suppliers</h3>
+                    <div class="value" id="kpiTotalSuppliers">0</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                <div style="background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                    <h3 style="margin-top:0; text-align:center; font-size:15px;">Orders Status (Pending vs Received)</h3>
+                    <div style="position: relative; height: 220px; width:100%;">
+                        <canvas id="ordersStatusChart"></canvas>
+                    </div>
+                    <div style="display:flex; justify-content:space-around; margin-top:15px;">
+                        <button class="btn btn-orange" style="font-size:12px; padding:6px 12px;" onclick="openOrdersModal('Pending')">View Pending Items</button>
+                        <button class="btn btn-green" style="font-size:12px; padding:6px 12px;" onclick="openOrdersModal('Received')">View Received Items</button>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-12">
-                    <div class="main-banner-image">
-                        <img src="assets/img/banner-img.png" alt="banner-image">
+
+                <div style="background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                    <h3 style="margin-top:0; font-size:15px;">Received Items Count by Supplier</h3>
+                    <div style="position: relative; height: 260px; width:100%;">
+                        <canvas id="supplierReceivedChart"></canvas>
+                    </div>
+                </div>
+
+                <div style="background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                    <h3 style="margin-top:0; font-size:15px;">Items Offered per Supplier</h3>
+                    <div style="position: relative; height: 260px; width:100%;">
+                        <canvas id="supplierCountChart"></canvas>
+                    </div>
+                </div>
+
+                <div style="background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                    <h3 style="margin-top:0; font-size:15px;">Average Price (KWD) by Supplier</h3>
+                    <div style="position: relative; height: 260px; width:100%;">
+                        <canvas id="supplierPriceChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- TAB 1: STORE ORDER TRACKER -->
+        <div id="order-tracker-tab" class="tab-content" style="display:none;">
+            <div style="background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <h3 style="margin-top:0;">📝 Place New Store Order</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom:15px;">
+                    <div class="form-group">
+                        <label style="font-size:12px; font-weight:bold;">Order Date</label>
+                        <input type="date" id="orderDateInput" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:12px; font-weight:bold;">Department</label>
+                        <select id="orderDepartmentSelect" class="form-control">
+                            <option value="Hot Section">Hot Section</option>
+                            <option value="Cold Section">Cold Section</option>
+                            <option value="Bakery">Bakery</option>
+                            <option value="Butchery">Butchery</option>
+                            <option value="Store">Store</option>
+                            <option value="Juice Bar">Juice Bar</option>
+                            <option value="Kitchen">Kitchen</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:12px; font-weight:bold;">Item Code</label>
+                        <input type="text" id="orderItemCodeInput" list="masterItemCodesList" class="form-control" placeholder="Enter Code" oninput="autoFillFromItemCode()">
+                    </div>
+                    <div class="form-group" style="position:relative;">
+                        <label style="font-size:12px; font-weight:bold;">Item Name</label>
+                        <input type="text" id="orderItemInput" class="form-control" autocomplete="off" placeholder="Type item name..." oninput="showItemNameSuggestions(true)" onfocus="showItemNameSuggestions(true)" onkeydown="return handleItemNameSuggestionKeydown(event)">
+                        <div id="orderItemSuggestions" style="position:absolute; top:calc(100% + 2px); left:0; right:0; z-index:999; display:none; max-height:240px; overflow-y:auto; background:#fff; border:1px solid var(--border-color); border-radius:8px; box-shadow:var(--shadow-md);"></div>
+                        <datalist id="masterItemsList"></datalist>
+                        <datalist id="masterItemCodesList"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:12px; font-weight:bold;">Origin</label>
+                        <select id="orderOriginSelect" class="form-control" onchange="autoFillUOMFromOrigin()">
+                            <option value="">Select Origin...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:12px; font-weight:bold;">UOM</label>
+                        <input type="text" id="orderUomInput" class="form-control" placeholder="e.g. Kg, Bag">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:12px; font-weight:bold;">Request Qty</label>
+                        <input type="number" id="orderQtyInput" class="form-control" placeholder="Quantity" min="1">
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <button class="btn" onclick="submitSingleOrder()">🚀 Submit Store Order</button>
+                </div>
+
+                <hr style="border:none; border-top:1px solid var(--border-color); margin:20px 0;">
+
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <h3 style="margin:0;">📥 Bulk Place Orders</h3>
+                        <div style="color:var(--text-muted); font-size:12px;">Upload a template to review and update orders before placing them all.</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-outline" style="font-size:12px;" onclick="downloadBulkTemplate()">⬇ Download Template</button>
+                        <label for="bulkOrderFile" class="btn btn-green" style="font-size:12px; cursor:pointer;">📄 Upload Bulk File</label>
+                        <input type="file" id="bulkOrderFile" accept=".xlsx, .xls, .csv" style="display:none;" onchange="handleBulkOrderUpload(event)">
+                    </div>
+                </div>
+                <div id="bulkOrdersEditor" style="display:none; margin-top:15px;">
+                    <div id="bulkOrdersGrid" style="display:flex; flex-direction:column; gap:10px; padding:15px; background:var(--bg-light); border:1px solid var(--border-color); border-radius:10px; max-height:400px; overflow-y:auto;"></div>
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px;">
+                        <button class="btn btn-outline" onclick="clearBulkDraft()">Clear Draft</button>
+                        <button class="btn btn-green" onclick="submitBulkDraft()">🚀 Place All Bulk Orders</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table Controls -->
+            <div class="table-container">
+                <div style="padding:15px; background:var(--bg-light); border-bottom:1px solid var(--border-color); display:flex; gap:15px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+                    <h3 style="margin:0; font-size:16px;">📦 Orders Log & Filter</h3>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <label style="font-size:12px; font-weight:bold;">Filter Date:</label>
+                        <input type="date" id="filterOrderDate" class="form-control" style="margin-bottom:0;" onchange="renderOrdersTable()">
+                        <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="resetDateFilter()">Show All</button>
+                        <button class="btn btn-green" style="padding:6px 12px; font-size:12px;" onclick="downloadOrdersExcel()">📊 Download Log</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Order ID</th>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th>Origin</th>
+                            <th>UOM</th>
+                            <th>Req Qty</th>
+                            <th>Rec Qty</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr><td colspan="11" style="text-align:center;">No active orders found.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: SUPPLIER ANALYSIS -->
+        <div id="supplier-tab" class="tab-content" style="display:none;">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Supplier Name (Click to View Items)</th>
+                            <th>Items Supplied</th>
+                            <th>Avg Price (KWD)</th>
+                            <th>Min Price (KWD)</th>
+                            <th>Max Price (KWD)</th>
+                            <th>Primary Origins</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplierTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 3: ITEM COMPARISON -->
+        <div id="items-tab" class="tab-content" style="display:none;">
+            <div style="display:flex; gap:15px; margin-bottom:20px; flex-wrap:wrap; background:var(--card-bg); padding:15px; border-radius:var(--radius); border:1px solid var(--border-color);">
+                <input type="text" id="searchInput" class="form-control" style="margin-bottom:0; flex:1; min-width:200px;" placeholder="Search item, code, or supplier..." oninput="filterItems()">
+                <select id="supplierFilter" class="form-control" style="margin-bottom:0; width:auto;" onchange="filterItems()"><option value="">All Suppliers</option></select>
+                <select id="originFilter" class="form-control" style="margin-bottom:0; width:auto;" onchange="filterItems()"><option value="">All Origins</option></select>
+                <select id="sortFilter" class="form-control" style="margin-bottom:0; width:auto;" onchange="filterItems()">
+                    <option value="price-asc" selected>Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                </select>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th>UOM</th>
+                            <th>Origin</th>
+                            <th>Price (KWD)</th>
+                            <th>Supplier</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 4: STORE REQUEST & QUOTES ANALYSIS -->
+        <div id="request-tab" class="tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <div>
+                    <h3 style="margin:0;">Automated Quote Finder</h3>
+                    <p style="margin:0; font-size:13px; color:var(--text-muted);">Matches requests against supplier catalog for lowest market prices.</p>
+                </div>
+                <button class="btn btn-green" onclick="exportCheapestOrdersExcel()">📊 Export Quotes Excel</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th>Origin</th>
+                            <th>Qty</th>
+                            <th>UOM</th>
+                            <th>Department</th>
+                            <th>Cheapest Supplier</th>
+                            <th>Unit Price (KWD)</th>
+                            <th>Total Price (KWD)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestTableBody">
+                        <tr><td colspan="10" style="text-align:center;">No store requests found.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
+</div>
 
-    <!-- Products Section -->
-    <section class="products-area pt-100 pb-70">
-        <div class="container">
-            <div class="section-title">
-                <span>Our Products</span>
-                <h2>High Quality Cooling Equipment</h2>
-            </div>
-            <div class="row">
-                <!-- Product Item 1 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="single-product-box">
-                        <div class="product-image">
-                            <img src="assets/img/products/img1.jpg" alt="product">
-                        </div>
-                        <div class="product-content">
-                            <h3>Commercial Refrigerator</h3>
-                            <p>Reliable and energy-efficient cooling solutions for businesses.</p>
-                        </div>
-                    </div>
-                </div>
+<!-- Notification Container -->
+<div id="notificationContainer"></div>
 
-                <!-- Product Item 2 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="single-product-box">
-                        <div class="product-image">
-                            <img src="assets/img/products/img2.jpg" alt="product">
-                        </div>
-                        <div class="product-content">
-                            <h3>Industrial Chiller</h3>
-                            <p>Heavy-duty chilling units designed for large-scale operations.</p>
-                        </div>
-                    </div>
-                </div>
+<script>
+    const userPasswords = {
+        'Admin': 'admin123',
+        'Walid': 'Walid123',
+        'Larry': 'Larry123'
+    };
 
-                <!-- Product Item 3 -->
-                <div class="col-lg-4 col-md-6 offset-lg-0 offset-md-3">
-                    <div class="single-product-box">
-                        <div class="product-image">
-                            <img src="assets/img/products/img3.jpg" alt="product">
-                        </div>
-                        <div class="product-content">
-                            <h3>Air Conditioner Units</h3>
-                            <p>Advanced HVAC units for optimal indoor climate control.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    let currentUser = 'Guest';
+    const MASTER_STORAGE_KEY = 'lightFields_masterData_v2';
+    const ORDERS_STORAGE_KEY = 'lightFields_ordersList_v2';
+    let bulkDraft = [];
 
-            <!-- View More Button Redirecting to GitHub -->
-            <div class="col-lg-12 col-md-12 text-center mt-4">
-                <a href="https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY" target="_blank" class="hanor-btn">
-                    <span class="hanor-btn-text">View More</span>
-                </a>
-            </div>
-        </div>
-    </section>
+    let masterData = [
+        {"Item Code":"FB001","Item Name":"Basmati Rice 5kg","UOM":"Bag","Origin":"India","Price (KWD)":5.250,"Supplier":"Global Foods Ltd"},
+        {"Item Code":"FB002","Item Name":"Basmati Rice 5kg","UOM":"Bag","Origin":"Pakistan","Price (KWD)":4.850,"Supplier":"Asia Grain Supply"},
+        {"Item Code":"FB003","Item Name":"Basmati Rice 5kg Premium","UOM":"Bag","Origin":"India","Price (KWD)":6.750,"Supplier":"Premium Harvest"},
+        {"Item Code":"FB004","Item Name":"Jasmine Rice 5kg","UOM":"Bag","Origin":"Thailand","Price (KWD)":5.800,"Supplier":"Thai Food Supply"},
+        {"Item Code":"FB006","Item Name":"Wheat Flour","UOM":"Kg","Origin":"Australia","Price (KWD)":0.520,"Supplier":"Grain World"},
+        {"Item Code":"FB007","Item Name":"Wheat Flour","UOM":"Kg","Origin":"India","Price (KWD)":0.410,"Supplier":"Sunrise Trading"},
+        {"Item Code":"FB008","Item Name":"White Sugar","UOM":"Kg","Origin":"Brazil","Price (KWD)":0.360,"Supplier":"Sweet Harvest Co"},
+        {"Item Code":"FB013","Item Name":"Olive Oil Extra Virgin","UOM":"Litre","Origin":"Spain","Price (KWD)":3.000,"Supplier":"Mediterranean Imports"},
+        {"Item Code":"FB014","Item Name":"Olive Oil Extra Virgin","UOM":"Litre","Origin":"Italy","Price (KWD)":3.900,"Supplier":"Italian Pantry"},
+        {"Item Code":"FB033","Item Name":"Chicken Breast","UOM":"Kg","Origin":"Brazil","Price (KWD)":2.050,"Supplier":"Prime Poultry"},
+        {"Item Code":"FB034","Item Name":"Chicken Breast","UOM":"Kg","Origin":"USA","Price (KWD)":2.700,"Supplier":"American Meats"}
+    ];
 
-    <!-- Footer Section -->
-    <footer class="footer-area pt-100 pb-70">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-footer-widget">
-                        <a href="index.html" class="logo">
-                            <img src="assets/img/logo.png" alt="logo">
-                        </a>
-                        <p>Leading provider of refrigeration and HVAC system installations, repairs, and sales.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-footer-widget">
-                        <h3>Quick Links</h3>
-                        <ul class="footer-quick-links">
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="about.html">About Us</a></li>
-                            <li><a href="services.html">Services</a></li>
-                            <li><a href="products.html">Products</a></li>
-                            <li><a href="contact.html">Contact Us</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="single-footer-widget">
-                        <h3>Contact Info</h3>
-                        <ul class="footer-contact-info">
-                            <li><i class="fas fa-map-marker-alt"></i> 123 Main Street, City, Country</li>
-                            <li><i class="fas fa-phone-alt"></i> <a href="tel:+1234567890">+1 234 567 890</a></li>
-                            <li><i class="fas fa-envelope"></i> <a href="mailto:info@example.com">info@example.com</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    let ordersList = [
+        { date: "2026-07-20", id: 101, itemCode: "FB002", itemName: "Basmati Rice 5kg", origin: "Pakistan", uom: "Bag", requestQty: 25, receivedQty: 0, department: "Hot Section", status: "Pending", supplier: "Asia Grain Supply" },
+        { date: "2026-07-21", id: 102, itemCode: "FB007", itemName: "Wheat Flour", origin: "India", uom: "Kg", requestQty: 100, receivedQty: 100, department: "Bakery", status: "Received", supplier: "Sunrise Trading" },
+        { date: "2026-07-24", id: 103, itemCode: "FB013", itemName: "Olive Oil Extra Virgin", origin: "Spain", uom: "Litre", requestQty: 40, receivedQty: 0, department: "Cold Section", status: "Pending", supplier: "Mediterranean Imports" }
+    ];
 
-    <!-- JS Dependencies -->
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/owl.carousel.min.js"></script>
-    <script src="assets/js/magnific-popup.min.js"></script>
-    <script src="assets/js/meanmenu.min.js"></script>
-    <script src="assets/js/wow.min.js"></script>
-    <script src="assets/js/main.js"></script>
+    let countChartInstance = null;
+    let priceChartInstance = null;
+    let statusChartInstance = null;
+    let supplierReceivedChartInstance = null;
+
+    function normalizeMasterRow(row) {
+        return {
+            'Item Code': String(row['Item Code'] ?? row['ItemCode'] ?? row['Code'] ?? '').trim(),
+            'Item Name': String(row['Item Name'] ?? row['Item'] ?? row['itemName'] ?? '').trim(),
+            'UOM': String(row['UOM'] ?? row['Uom'] ?? row['Unit'] ?? '').trim(),
+            'Origin': String(row['Origin'] ?? row['Country'] ?? '').trim(),
+            'Price (KWD)': parseFloat(row['Price (KWD)'] ?? row['Price'] ?? 0) || 0,
+            'Supplier': String(row['Supplier'] ?? row['Supplier Name'] ?? '').trim()
+        };
+    }
+
+    function saveAppData() {
+        localStorage.setItem(MASTER_STORAGE_KEY, JSON.stringify(masterData));
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(ordersList));
+    }
+
+    function loadAppData() {
+        try {
+            const savedMaster = JSON.parse(localStorage.getItem(MASTER_STORAGE_KEY) || 'null');
+            const savedOrders = JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY) || 'null');
+            if (Array.isArray(savedMaster) && savedMaster.length) masterData = savedMaster.map(normalizeMasterRow);
+            if (Array.isArray(savedOrders)) ordersList = savedOrders;
+        } catch (err) {
+            console.warn('Saved data could not be loaded.', err);
+        }
+    }
+
+    function formatDateDMY(value) {
+        if (!value) return '';
+        const s = String(value).trim();
+        let d;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+            const [y,m,day] = s.split('-').map(Number);
+            d = new Date(y, m - 1, day);
+        } else {
+            d = new Date(s);
+        }
+        if (isNaN(d.getTime())) return s;
+        return String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + d.getFullYear();
+    }
+
+    function normalizeDateForStorage(value) {
+        if (!value) return new Date().toISOString().split('T')[0];
+        const d = new Date(value);
+        if (!isNaN(d.getTime())) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+        return new Date().toISOString().split('T')[0];
+    }
+
+    function updateMasterStatus() {
+        const el = document.getElementById('masterStatus');
+        if (el) el.textContent = `Master list: ${masterData.length} items`;
+    }
+
+    function getMasterItem(itemCode, itemName, origin) {
+        return masterData.find(m =>
+            (itemCode && String(m['Item Code']).toLowerCase() === String(itemCode).toLowerCase()) ||
+            (itemName && String(m['Item Name']).toLowerCase() === String(itemName).toLowerCase() &&
+             (!origin || String(m.Origin).toLowerCase() === String(origin).toLowerCase()))
+        );
+    }
+
+    function getNextOrderId() {
+        return ordersList.length ? Math.max(...ordersList.map(o => Number(o.id) || 0)) + 1 : 101;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadAppData();
+        document.getElementById('orderDateInput').value = new Date().toISOString().split('T')[0];
+        updateMasterStatus();
+        populateDatalist();
+        initDashboard();
+    });
+
+    function loginUser() {
+        const user = document.getElementById('userSelect').value;
+        const pass = document.getElementById('userPassword').value;
+        const errorDiv = document.getElementById('loginError');
+
+        if (userPasswords[user] && pass === userPasswords[user]) {
+            currentUser = user;
+            document.getElementById('currentUserDisplay').innerText = user;
+            document.getElementById('loginOverlay').style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            applyRolePermissions(user);
+            initDashboard();
+        } else {
+            errorDiv.style.display = 'block';
+        }
+    }
+
+    function applyRolePermissions(user) {
+        updateMasterSharingControls(user);
+        const sidebarItems = document.querySelectorAll('#sidebarNavList .nav-item');
+        const uploadMasterBtn = document.getElementById('uploadMasterContainer');
+
+        if (user === 'Larry') {
+            sidebarItems.forEach(item => {
+                item.style.display = item.classList.contains('store-allowed') ? 'flex' : 'none';
+            });
+            uploadMasterBtn.style.display = 'none';
+            switchTab('order-tracker-tab', document.getElementById('orderTrackerNavItem'));
+        } else {
+            sidebarItems.forEach(item => item.style.display = 'flex');
+            uploadMasterBtn.style.display = 'flex';
+            switchTab('dashboard-tab', sidebarItems[0]);
+        }
+    }
+
+    function initDashboard() {
+        updateMasterStatus();
+        updateKPIs();
+        populateDatalist();
+        populateFilters();
+        renderSupplierTable();
+        renderItemsTable(masterData);
+        renderOrdersTable();
+        renderRequestTable();
+        renderCharts();
+    }
+
+    function switchTab(tabId, navElement) {
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        document.getElementById(tabId).style.display = 'block';
+        if (navElement) navElement.classList.add('active');
+
+        const titleMap = {
+            'dashboard-tab': 'Executive Dashboard',
+            'order-tracker-tab': 'Store Order Tracker',
+            'supplier-tab': 'Supplier Analysis',
+            'items-tab': 'Item & Price Comparison',
+            'request-tab': 'Store Request Quote Analysis'
+        };
+        document.getElementById('pageTitle').innerText = titleMap[tabId] || 'Dashboard';
+    }
+
+    function getItemPrice(item) {
+        return parseFloat(item['Price (KWD)'] || item['Price'] || 0);
+    }
+
+    function getFilteredOrders() {
+        const filterDate = document.getElementById('dashDateFilter').value;
+        return filterDate ? ordersList.filter(o => o.date === filterDate) : ordersList;
+    }
+
+    function clearDashDateFilter() {
+        document.getElementById('dashDateFilter').value = '';
+        initDashboard();
+    }
+
+    function updateKPIs() {
+        const filtered = getFilteredOrders();
+        const total = filtered.length;
+        const pending = filtered.filter(o => o.status === 'Pending').length;
+        const received = filtered.filter(o => o.status === 'Received').length;
+        const fulfillRate = total > 0 ? Math.round((received / total) * 100) : 0;
+        
+        document.getElementById('kpiTotalOrders').innerText = total;
+        document.getElementById('kpiPendingOrders').innerText = pending;
+        document.getElementById('kpiReceivedOrders').innerText = received;
+        document.getElementById('kpiFulfillRate').innerText = fulfillRate + '%';
+        document.getElementById('kpiTotalItems').innerText = masterData.length;
+        document.getElementById('kpiTotalSuppliers').innerText = new Set(masterData.map(d => d.Supplier)).size;
+    }
+
+    function populateDatalist() {
+        const datalist = document.getElementById('masterItemsList');
+        const codeList = document.getElementById('masterItemCodesList');
+        datalist.innerHTML = '';
+        codeList.innerHTML = '';
+
+        [...new Set(masterData.map(d => d['Item Name']).filter(Boolean))].forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item;
+            datalist.appendChild(opt);
+        });
+
+        [...new Set(masterData.map(d => d['Item Code']).filter(Boolean))].forEach(code => {
+            const opt = document.createElement('option');
+            opt.value = code;
+            codeList.appendChild(opt);
+        });
+    }
+
+    function autoFillFromItemCode() {
+        const code = document.getElementById('orderItemCodeInput').value.trim();
+        const itemNameInput = document.getElementById('orderItemInput');
+        const originSelect = document.getElementById('orderOriginSelect');
+        const uomInput = document.getElementById('orderUomInput');
+
+        if (!code) return;
+
+        const matchingItems = masterData.filter(d => String(d['Item Code'] || '').toLowerCase() === code.toLowerCase());
+        if (!matchingItems.length) return;
+
+        itemNameInput.value = matchingItems[0]['Item Name'] || '';
+        uomInput.value = matchingItems[0].UOM || '';
+
+        originSelect.innerHTML = '<option value="">Select Origin...</option>';
+        const origins = [...new Set(matchingItems.map(m => m.Origin).filter(Boolean))];
+        origins.forEach(orig => {
+            const opt = document.createElement('option');
+            opt.value = orig;
+            opt.innerText = orig;
+            originSelect.appendChild(opt);
+        });
+
+        if (origins.length === 1) originSelect.value = origins[0];
+    }
+
+    function autoFillUOMFromOrigin() {
+        const itemName = document.getElementById('orderItemInput').value.trim();
+        const selectedOrigin = document.getElementById('orderOriginSelect').value.trim();
+        const uomInput = document.getElementById('orderUomInput');
+        const codeInput = document.getElementById('orderItemCodeInput');
+
+        const itemMatch = masterData.find(d =>
+            String(d['Item Name']).toLowerCase() === itemName.toLowerCase() &&
+            String(d.Origin).toLowerCase() === selectedOrigin.toLowerCase()
+        );
+
+        if (itemMatch) {
+            codeInput.value = itemMatch['Item Code'] || '';
+            uomInput.value = itemMatch.UOM || '';
+        }
+    }
+
+    function submitSingleOrder() {
+        const date = document.getElementById('orderDateInput').value;
+        const department = document.getElementById('orderDepartmentSelect').value;
+        const itemCode = document.getElementById('orderItemCodeInput').value.trim();
+        const itemName = document.getElementById('orderItemInput').value.trim();
+        const origin = document.getElementById('orderOriginSelect').value.trim() || 'N/A';
+        const uom = document.getElementById('orderUomInput').value.trim();
+        const qty = parseInt(document.getElementById('orderQtyInput').value);
+
+        if (!itemName || isNaN(qty) || qty <= 0) {
+            alert('Please specify a valid Item Name and Quantity.');
+            return;
+        }
+
+        const masterMatch = getMasterItem(itemCode, itemName, origin);
+        const newId = getNextOrderId();
+
+        ordersList.push({
+            date: date,
+            id: newId,
+            itemCode: masterMatch ? masterMatch['Item Code'] : itemCode,
+            itemName: masterMatch ? masterMatch['Item Name'] : itemName,
+            origin: origin,
+            uom: uom || (masterMatch ? masterMatch.UOM : 'Pcs'),
+            department: department,
+            supplier: masterMatch ? masterMatch.Supplier : 'Pending Allocation',
+            requestQty: qty,
+            receivedQty: 0,
+            status: 'Pending'
+        });
+
+        document.getElementById('orderItemCodeInput').value = '';
+        document.getElementById('orderItemInput').value = '';
+        document.getElementById('orderQtyInput').value = '';
+
+        saveAppData();
+        showToast(`Order #${newId} submitted!`);
+        initDashboard();
+    }
+
+    function toggleOrderStatus(orderId) {
+        const order = ordersList.find(o => o.id === orderId);
+        if (order) {
+            order.status = order.status === 'Pending' ? 'Received' : 'Pending';
+            order.receivedQty = order.status === 'Received' ? order.requestQty : 0;
+            saveAppData();
+            showToast(`Order #${orderId} marked as ${order.status}!`);
+            initDashboard();
+        }
+    }
+
+    function deleteOrder(orderId) {
+        if (confirm(`Delete order #${orderId}?`)) {
+            ordersList = ordersList.filter(o => o.id !== orderId);
+            saveAppData();
+            showToast(`Order #${orderId} deleted.`);
+            initDashboard();
+        }
+    }
+
+    function renderOrdersTable() {
+        const tbody = document.getElementById('ordersTableBody');
+        const filterDate = document.getElementById('filterOrderDate').value;
+        const displayOrders = filterDate ? ordersList.filter(o => o.date === filterDate) : ordersList;
+
+        if (!displayOrders.length) {
+            tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;">No store orders found.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = displayOrders.map(o => `
+            <tr>
+                <td>${formatDateDMY(o.date)}</td>
+                <td><strong>#${o.id}</strong></td>
+                <td>${o.itemCode || '—'}</td>
+                <td>${o.itemName}</td>
+                <td>${o.origin}</td>
+                <td>${o.uom}</td>
+                <td>${o.requestQty}</td>
+                <td>${o.receivedQty}</td>
+                <td><strong>${o.department}</strong></td>
+                <td><span class="badge ${o.status === 'Received' ? 'badge-green' : 'badge-orange'}">${o.status}</span></td>
+                <td>
+                    <button class="btn ${o.status === 'Pending' ? 'btn-green' : 'btn-orange'}" style="padding:4px 8px; font-size:11px;" onclick="toggleOrderStatus(${o.id})">
+                        ${o.status === 'Pending' ? 'Receive' : 'Undo'}
+                    </button>
+                    <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteOrder(${o.id})">🗑</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function resetDateFilter() {
+        document.getElementById('filterOrderDate').value = '';
+        renderOrdersTable();
+    }
+
+    function downloadOrdersExcel() {
+        const ws = XLSX.utils.json_to_sheet(ordersList);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Orders");
+        XLSX.writeFile(wb, `Orders_Log.xlsx`);
+    }
+
+    function renderSupplierTable() {
+        const tbody = document.getElementById('supplierTableBody');
+        const map = {};
+
+        masterData.forEach(item => {
+            const supp = item.Supplier;
+            const price = getItemPrice(item);
+            if (!map[supp]) map[supp] = { count: 0, total: 0, min: price, max: price };
+            map[supp].count++;
+            map[supp].total += price;
+            if (price < map[supp].min) map[supp].min = price;
+            if (price > map[supp].max) map[supp].max = price;
+        });
+
+        tbody.innerHTML = Object.keys(map).map(supp => `
+            <tr>
+                <td><strong style="color:var(--accent); cursor:pointer;" onclick="openSupplierItemsModal('${supp}')">🏢 ${supp}</strong></td>
+                <td>${map[supp].count} Items</td>
+                <td>${(map[supp].total / map[supp].count).toFixed(3)} KWD</td>
+                <td>${map[supp].min.toFixed(3)} KWD</td>
+                <td>${map[supp].max.toFixed(3)} KWD</td>
+                <td>Primary</td>
+            </tr>
+        `).join('');
+    }
+
+    function openSupplierItemsModal(supplierName) {
+        const modal = document.getElementById('orderDetailModal');
+        document.getElementById('modalTitle').innerText = `Supplier: ${supplierName}`;
+        document.getElementById('modalTableHead').innerHTML = `
+            <tr><th>Code</th><th>Name</th><th>UOM</th><th>Origin</th><th>Price</th></tr>
+        `;
+        const items = masterData.filter(d => d.Supplier === supplierName);
+        document.getElementById('modalTableBody').innerHTML = items.map(i => `
+            <tr><td>${i['Item Code']}</td><td>${i['Item Name']}</td><td>${i.UOM}</td><td>${i.Origin}</td><td>${getItemPrice(i).toFixed(3)} KWD</td></tr>
+        `).join('');
+        modal.style.display = 'flex';
+    }
+
+    function openOrdersModal(status) {
+        const modal = document.getElementById('orderDetailModal');
+        document.getElementById('modalTitle').innerText = `${status} Orders`;
+        document.getElementById('modalTableHead').innerHTML = `
+            <tr><th>Date</th><th>ID</th><th>Item</th><th>Qty</th><th>Status</th></tr>
+        `;
+        const filtered = status === 'All' ? ordersList : ordersList.filter(o => o.status === status);
+        document.getElementById('modalTableBody').innerHTML = filtered.map(o => `
+            <tr><td>${formatDateDMY(o.date)}</td><td>#${o.id}</td><td>${o.itemName}</td><td>${o.requestQty}</td><td>${o.status}</td></tr>
+        `).join('');
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('orderDetailModal').style.display = 'none'; }
+    function openAddMasterModal() { document.getElementById('addMasterItemModal').style.display = 'flex'; }
+    function closeAddMasterModal() { document.getElementById('addMasterItemModal').style.display = 'none'; }
+
+    function saveSingleMasterItem() {
+        const code = document.getElementById('addMasterCode').value.trim();
+        const name = document.getElementById('addMasterName').value.trim();
+        const uom = document.getElementById('addMasterUom').value.trim();
+        const supplier = document.getElementById('addMasterSupplier').value.trim();
+
+        if (!code || !name || !uom || !supplier) {
+            alert('Please fill out required fields.');
+            return;
+        }
+
+        masterData.push({
+            'Item Code': code,
+            'Item Name': name,
+            'UOM': uom,
+            'Origin': document.getElementById('addMasterOrigin').value.trim(),
+            'Price (KWD)': parseFloat(document.getElementById('addMasterPrice').value) || 0,
+            'Supplier': supplier
+        });
+
+        saveAppData();
+        closeAddMasterModal();
+        initDashboard();
+        showToast('New Master Item Added!');
+    }
+
+    function populateFilters() {
+        const suppFilter = document.getElementById('supplierFilter');
+        const origFilter = document.getElementById('originFilter');
+        suppFilter.innerHTML = '<option value="">All Suppliers</option>' + [...new Set(masterData.map(d => d.Supplier))].map(s => `<option value="${s}">${s}</option>`).join('');
+        origFilter.innerHTML = '<option value="">All Origins</option>' + [...new Set(masterData.map(d => d.Origin))].map(o => `<option value="${o}">${o}</option>`).join('');
+    }
+
+    function filterItems() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const supp = document.getElementById('supplierFilter').value;
+        const orig = document.getElementById('originFilter').value;
+
+        const filtered = masterData.filter(item => {
+            const matchesSearch = (item['Item Name'] || '').toLowerCase().includes(search) || (item['Item Code'] || '').toLowerCase().includes(search);
+            return matchesSearch && (!supp || item.Supplier === supp) && (!orig || item.Origin === orig);
+        });
+
+        renderItemsTable(filtered);
+    }
+
+    function renderItemsTable(data) {
+        document.getElementById('itemsTableBody').innerHTML = data.map(item => `
+            <tr>
+                <td>${item['Item Code']}</td>
+                <td><strong>${item['Item Name']}</strong></td>
+                <td>${item.UOM}</td>
+                <td>${item.Origin}</td>
+                <td>${getItemPrice(item).toFixed(3)} KWD</td>
+                <td>${item.Supplier}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderRequestTable() {
+        document.getElementById('requestTableBody').innerHTML = ordersList.map(req => {
+            const matches = masterData.filter(m => m['Item Name'].toLowerCase() === req.itemName.toLowerCase());
+            const cheapest = matches.length ? matches.reduce((p, c) => getItemPrice(c) < getItemPrice(p) ? c : p) : null;
+            const price = cheapest ? getItemPrice(cheapest) : 0;
+
+            return `
+                <tr>
+                    <td>${formatDateDMY(req.date)}</td>
+                    <td>${req.itemCode || '—'}</td>
+                    <td><strong>${req.itemName}</strong></td>
+                    <td>${req.origin}</td>
+                    <td>${req.requestQty}</td>
+                    <td>${req.uom}</td>
+                    <td>${req.department}</td>
+                    <td>${cheapest ? `<span class="badge badge-green">${cheapest.Supplier}</span>` : 'N/A'}</td>
+                    <td>${price ? price.toFixed(3) + ' KWD' : 'N/A'}</td>
+                    <td>${price ? (price * req.requestQty).toFixed(3) + ' KWD' : 'N/A'}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function exportCheapestOrdersExcel() {
+        const ws = XLSX.utils.json_to_sheet(ordersList);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Quotes");
+        XLSX.writeFile(wb, "Lowest_Quotes.xlsx");
+    }
+
+    function exportSharedMasterList() {
+        const blob = new Blob([JSON.stringify({ masterData }, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Master_List.json`;
+        a.click();
+    }
+
+    function importSharedMasterList(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const json = JSON.parse(event.target.result);
+            if (json.masterData) {
+                masterData = json.masterData.map(normalizeMasterRow);
+                saveAppData();
+                initDashboard();
+                showToast('Master Catalog Loaded!');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function updateMasterSharingControls(user) {
+        document.getElementById('exportMasterBtn').style.display = user === 'Admin' ? 'inline-flex' : 'none';
+        document.getElementById('importMasterLabel').style.display = user === 'Larry' ? 'inline-flex' : 'none';
+    }
+
+    function handleMasterFileUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+            masterData = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]).map(normalizeMasterRow);
+            saveAppData();
+            initDashboard();
+            showToast('Master Catalog Updated!');
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function renderCharts() {
+        const filtered = getFilteredOrders();
+        const pending = filtered.filter(o => o.status === 'Pending').length;
+        const received = filtered.filter(o => o.status === 'Received').length;
+
+        if (statusChartInstance) statusChartInstance.destroy();
+        statusChartInstance = new Chart(document.getElementById('ordersStatusChart'), {
+            type: 'doughnut',
+            data: { labels: ['Pending', 'Received'], datasets: [{ data: [pending, received], backgroundColor: ['#f59e0b', '#10b981'] }] },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        const suppCount = {};
+        masterData.forEach(i => suppCount[i.Supplier] = (suppCount[i.Supplier] || 0) + 1);
+
+        if (countChartInstance) countChartInstance.destroy();
+        countChartInstance = new Chart(document.getElementById('supplierCountChart'), {
+            type: 'bar',
+            data: { labels: Object.keys(suppCount), datasets: [{ label: 'Items', data: Object.values(suppCount), backgroundColor: '#3b82f6' }] },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    function showToast(msg) {
+        const container = document.getElementById('notificationContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast-popup';
+        toast.innerHTML = `<strong>🔔 System Update</strong><br>${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+</script>
 </body>
 </html>
