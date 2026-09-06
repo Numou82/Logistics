@@ -1,337 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IK Developers Group | Industrial Warehousing Construction in Mumbai</title>
-<meta name="description" content="IK Developers Group is building a pre-engineered warehousing colony on its own land in Mumbai — structural steel frames enclosed in metal roof deck across the roof and all four walls.">
-<meta name="theme-color" content="#14304F">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Expenses (KWD)</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f7f6; }
+    .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    input, select, button { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
+    button { background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; }
+    .hidden { display: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
 </head>
 <body>
-<a class="skip-link" href="#main">Skip to content</a>
 
-<header class="site-header" id="siteHeader">
-  <div class="header-inner">
-    <a href="#home" class="brand" aria-label="IK Developers Group home">
-      <img class="brand-logo" src="logo.png" alt="IK Developers Group">
-    </a>
-    <nav class="main-nav" id="mainNav">
-      <a href="#about">About</a>
-      <a href="#project">Project</a>
-      <a href="#partners">Partners</a>
-      <a href="#contact">Contact</a>
-      <a href="#contact" class="btn btn-primary nav-cta">Get in touch</a>
-    </nav>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mainNav">
-      <span></span><span></span><span></span>
-    </button>
+  <!-- LOGIN SECTION -->
+  <div id="loginSection" class="card">
+    <h2>Room Expense Login</h2>
+    <select id="userSelect">
+      <option value="">Select Your Name</option>
+      <option value="Amir Khan">Amir Khan</option>
+      <option value="Parvej">Parvej</option>
+      <option value="Meraj">Meraj</option>
+      <option value="Modassir">Modassir</option>
+      <option value="Rizwan">Rizwan</option>
+    </select>
+    <input type="password" id="passwordInput" placeholder="Enter Password">
+    <button onclick="login()">Login</button>
   </div>
-</header>
 
-<main id="main">
+  <!-- MAIN APP SECTION -->
+  <div id="appSection" class="card hidden">
+    <h3>Welcome, <span id="currentUser"></span></h3>
+    <button onclick="logout()" style="background: #dc3545;">Logout</button>
+    <hr>
 
-  <!-- ================= HERO ================= -->
-  <section class="hero" id="home">
-    <div class="hero-grid-bg" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <div class="hero-copy">
-        <h1>A new warehousing colony taking shape on Mumbai's ground.</h1>
-        <p class="hero-sub">IK Developers Group is developing a dedicated industrial park of pre-engineered warehouses on our own land in Mumbai. Structural steel frames are enclosed in metal roof deck across the roof and all four walls, built for speed, strength, and long-term durability.</p>
-        <div class="hero-actions">
-          <a href="#project" class="btn btn-primary">View the project</a>
-          <a href="#contact" class="btn btn-ghost">Get in touch</a>
-        </div>
-      </div>
-      <div class="hero-visual">
-        <svg viewBox="0 0 650 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a steel-framed warehouse with a metal roof deck, part of a wider warehousing colony">
-          <g class="detail-fade" fill="var(--blue-light)" opacity="0.32">
-            <path d="M20,470 L20,388 L68,352 L116,388 L116,470 Z"/>
-            <path d="M560,470 L560,365 L598,322 L636,365 L636,470 Z"/>
-          </g>
-          <line class="detail-fade" x1="8" y1="470" x2="642" y2="470" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+    <h3>Add Expense</h3>
+    <input type="text" id="itemInput" placeholder="Item Name (e.g. Rice, Internet)">
+    <input type="number" step="0.001" id="amountInput" placeholder="Amount in KWD">
+    <input type="date" id="dateInput">
+    <button onclick="addExpense()">Submit Expense</button>
 
-          <polygon class="shape shape-side" style="--target-fill:0.55" points="430,220 540,165 540,415 430,470" fill="var(--blue-mid)" stroke="var(--blue-light)" stroke-width="2.5"/>
-          <polygon class="shape shape-roof" style="--target-fill:0.5" points="150,220 430,220 540,165 260,165" fill="var(--blue-light)" stroke="#EAF2F8" stroke-width="2.5"/>
-          <polygon class="shape shape-front" style="--target-fill:1" points="150,220 430,220 430,470 150,470" fill="var(--navy-deep)" stroke="#EAF2F8" stroke-width="2.5"/>
+    <hr>
+    <h3>Month-End Summary</h3>
+    <label for="monthFilter">Select Month:</label>
+    <input type="month" id="monthFilter" onchange="loadMonthlyExpenses()">
 
-          <g class="detail-fade" stroke="rgba(234,242,248,0.4)" stroke-width="1.5">
-            <line x1="270" y1="220" x2="270" y2="470"/>
-            <line x1="375" y1="220" x2="375" y2="470"/>
-          </g>
+    <div id="summaryResults"></div>
 
-          <g class="detail-fade">
-            <rect x="185" y="390" width="60" height="80" fill="#0B2033" stroke="#EAF2F8" stroke-width="2"/>
-            <rect x="275" y="390" width="60" height="80" fill="#0B2033" stroke="#EAF2F8" stroke-width="2"/>
-            <line x1="185" y1="415" x2="245" y2="415" stroke="rgba(234,242,248,0.4)" stroke-width="1.5"/>
-            <line x1="185" y1="440" x2="245" y2="440" stroke="rgba(234,242,248,0.4)" stroke-width="1.5"/>
-            <line x1="275" y1="415" x2="335" y2="415" stroke="rgba(234,242,248,0.4)" stroke-width="1.5"/>
-            <line x1="275" y1="440" x2="335" y2="440" stroke="rgba(234,242,248,0.4)" stroke-width="1.5"/>
-          </g>
-
-          <g class="detail-fade" stroke="rgba(234,242,248,0.5)" stroke-width="1.5">
-            <line x1="184" y1="220" x2="294" y2="165"/>
-            <line x1="227" y1="220" x2="337" y2="165"/>
-            <line x1="271" y1="220" x2="381" y2="165"/>
-            <line x1="314" y1="220" x2="424" y2="165"/>
-            <line x1="358" y1="220" x2="468" y2="165"/>
-            <line x1="401" y1="220" x2="511" y2="165"/>
-          </g>
-
-          <g class="detail-fade" stroke="rgba(255,255,255,0.35)" stroke-width="1.5">
-            <line x1="447" y1="212" x2="447" y2="462"/>
-            <line x1="464" y1="204" x2="464" y2="454"/>
-            <line x1="480" y1="195" x2="480" y2="445"/>
-            <line x1="496" y1="187" x2="496" y2="437"/>
-            <line x1="513" y1="179" x2="513" y2="429"/>
-            <line x1="529" y1="171" x2="529" y2="421"/>
-          </g>
-
-          <line class="accent-line" x1="150" y1="220" x2="430" y2="220" stroke="var(--rust-light)" stroke-width="3.5"/>
-        </svg>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= ABOUT ================= -->
-  <section id="about">
-    <div class="section-inner">
-      <div class="about-copy">
-        <h2>About IK Developers Group</h2>
-        <p>IK Developers Group is a construction and real-estate development company focused on industrial and warehousing projects around Mumbai. We plan, engineer, and build on our own land, carrying a project from site planning through structural steel erection to final handover.</p>
-        <p>Our focus is pre-engineered industrial construction: fast to build, built to last, and suited to how warehousing and logistics businesses actually operate. We work closely with our fabrication and material partners at every stage, so what's designed on paper is exactly what gets built on site.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= PROCESS ================= -->
-  <section class="process" id="process">
-    <div class="section-inner">
-      <h2>How we build</h2>
-      <div class="process-list">
-        <div class="process-step">
-          <span class="step-num">1</span>
-          <h3>Land &amp; planning</h3>
-          <p>We assess the site, plan the colony layout, and secure the approvals needed before any steel goes up.</p>
-        </div>
-        <div class="process-step">
-          <span class="step-num">2</span>
-          <h3>Structural design</h3>
-          <p>Structural steel frames are engineered for wide-span warehouse units, sized to the colony's layout.</p>
-        </div>
-        <div class="process-step">
-          <span class="step-num">3</span>
-          <h3>Steel &amp; deck fabrication</h3>
-          <p>Structural steel and metal roof deck are fabricated with our partners to the project's specifications.</p>
-        </div>
-        <div class="process-step">
-          <span class="step-num">4</span>
-          <h3>Erection &amp; handover</h3>
-          <p>Frame, roof, and wall cladding go up on site, through to final handover of each unit.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= FEATURED PROJECT ================= -->
-  <section id="project">
-    <div class="section-inner project-grid">
-      <div class="project-copy">
-        <h2>Featured project</h2>
-        <p class="project-name">IK Industrial Park, Mumbai</p>
-        <p>On our own land in Mumbai, we're developing a dedicated colony of warehouse units built as pre-engineered steel structures. Every unit is enclosed on the roof and all four walls in metal roof deck panelling — a system chosen for its speed of construction and long-term durability across a large industrial site.</p>
-      </div>
-      <div class="spec-panel">
-        <div class="spec-row"><span class="spec-label">Location</span><span class="spec-value">Mumbai, Maharashtra</span></div>
-        <div class="spec-row"><span class="spec-label">Development</span><span class="spec-value">Warehousing colony, multiple units</span></div>
-        <div class="spec-row"><span class="spec-label">Structure</span><span class="spec-value">Structural steel frame</span></div>
-        <div class="spec-row"><span class="spec-label">Envelope</span><span class="spec-value">Metal roof deck, roof &amp; all 4 walls</span></div>
-        <div class="spec-row"><span class="spec-label">Status</span><span class="spec-value">Land secured, pre-construction</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= CONSTRUCTION SYSTEM ================= -->
-  <section id="system">
-    <div class="section-inner">
-      <h2>Built in structural steel and metal deck</h2>
-      <p class="system-intro">Metal roof deck is the backbone of every unit in the colony, used not only on the roof but across all four walls. Here's how the system comes together.</p>
-
-      <div class="system-visual">
-        <svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Technical illustration of a warehouse cross-section showing the metal roof deck, wall cladding, structural steel frame, and foundation">
-          <rect x="150" y="410" width="550" height="34" fill="none" stroke="var(--steel)" stroke-width="1.5"/>
-          <g stroke="var(--steel)" stroke-width="1">
-            <line x1="160" y1="410" x2="175" y2="444"/><line x1="185" y1="410" x2="200" y2="444"/>
-            <line x1="210" y1="410" x2="225" y2="444"/><line x1="235" y1="410" x2="250" y2="444"/>
-            <line x1="260" y1="410" x2="275" y2="444"/><line x1="285" y1="410" x2="300" y2="444"/>
-            <line x1="310" y1="410" x2="325" y2="444"/><line x1="335" y1="410" x2="350" y2="444"/>
-            <line x1="360" y1="410" x2="375" y2="444"/><line x1="385" y1="410" x2="400" y2="444"/>
-            <line x1="410" y1="410" x2="425" y2="444"/><line x1="435" y1="410" x2="450" y2="444"/>
-            <line x1="460" y1="410" x2="475" y2="444"/><line x1="485" y1="410" x2="500" y2="444"/>
-            <line x1="510" y1="410" x2="525" y2="444"/><line x1="535" y1="410" x2="550" y2="444"/>
-            <line x1="560" y1="410" x2="575" y2="444"/><line x1="585" y1="410" x2="600" y2="444"/>
-            <line x1="610" y1="410" x2="625" y2="444"/><line x1="635" y1="410" x2="650" y2="444"/>
-            <line x1="660" y1="410" x2="675" y2="444"/><line x1="685" y1="410" x2="695" y2="440"/>
-          </g>
-          <line x1="150" y1="410" x2="700" y2="410" stroke="var(--navy-deep)" stroke-width="2"/>
-
-          <line x1="225" y1="160" x2="225" y2="440" stroke="var(--navy-deep)" stroke-width="4"/>
-          <line x1="210" y1="163" x2="240" y2="163" stroke="var(--navy-deep)" stroke-width="4"/>
-          <line x1="210" y1="437" x2="240" y2="437" stroke="var(--navy-deep)" stroke-width="4"/>
-
-          <polygon points="520,170 615,112 615,362 520,410" fill="var(--blue-mid)" fill-opacity="0.5" stroke="var(--blue-mid)" stroke-width="2.5"/>
-          <polygon points="260,170 520,170 615,112 355,112" fill="var(--blue-light)" fill-opacity="0.55" stroke="var(--navy-deep)" stroke-width="2.5"/>
-          <polygon points="260,170 520,170 520,410 260,410" fill="var(--navy-deep)" fill-opacity="0.92" stroke="var(--navy-deep)" stroke-width="2.5"/>
-
-          <g stroke="rgba(255,255,255,0.35)" stroke-width="1.5">
-            <line x1="285" y1="170" x2="285" y2="410"/>
-            <line x1="365" y1="170" x2="365" y2="410"/>
-            <line x1="495" y1="170" x2="495" y2="410"/>
-          </g>
-          <rect x="305" y="330" width="50" height="80" fill="#0B2033" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
-          <rect x="400" y="330" width="50" height="80" fill="#0B2033" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
-
-          <g stroke="var(--navy-deep)" stroke-width="1.5" opacity="0.8">
-            <line x1="299" y1="170" x2="394" y2="112"/>
-            <line x1="351" y1="170" x2="446" y2="112"/>
-            <line x1="403" y1="170" x2="498" y2="112"/>
-            <line x1="455" y1="170" x2="550" y2="112"/>
-            <line x1="494" y1="170" x2="589" y2="112"/>
-          </g>
-          <g stroke="var(--blue-mid)" stroke-width="1.5">
-            <line x1="539" y1="158" x2="539" y2="398"/>
-            <line x1="558" y1="147" x2="558" y2="387"/>
-            <line x1="577" y1="135" x2="577" y2="375"/>
-            <line x1="596" y1="124" x2="596" y2="364"/>
-          </g>
-        </svg>
-      </div>
-
-      <div class="legend">
-        <div class="legend-item">
-          <svg class="legend-swatch" width="26" height="26" viewBox="0 0 26 26"><rect x="1" y="1" width="24" height="24" fill="none" stroke="var(--steel-light)" stroke-width="1"/><line x1="5" y1="21" x2="17" y2="5" stroke="var(--navy-deep)" stroke-width="1.6"/><line x1="11" y1="21" x2="23" y2="5" stroke="var(--navy-deep)" stroke-width="1.6"/></svg>
-          <span>Roof — metal deck</span>
-        </div>
-        <div class="legend-item">
-          <svg class="legend-swatch" width="26" height="26" viewBox="0 0 26 26"><rect x="1" y="1" width="24" height="24" fill="none" stroke="var(--steel-light)" stroke-width="1"/><line x1="8" y1="4" x2="8" y2="22" stroke="var(--blue-mid)" stroke-width="1.6"/><line x1="13" y1="4" x2="13" y2="22" stroke="var(--blue-mid)" stroke-width="1.6"/><line x1="18" y1="4" x2="18" y2="22" stroke="var(--blue-mid)" stroke-width="1.6"/></svg>
-          <span>Walls — metal deck cladding, all 4 sides</span>
-        </div>
-        <div class="legend-item">
-          <svg class="legend-swatch" width="26" height="26" viewBox="0 0 26 26"><rect x="1" y="1" width="24" height="24" fill="none" stroke="var(--steel-light)" stroke-width="1"/><line x1="13" y1="5" x2="13" y2="21" stroke="var(--navy-deep)" stroke-width="3"/><line x1="8" y1="5" x2="18" y2="5" stroke="var(--navy-deep)" stroke-width="3"/><line x1="8" y1="21" x2="18" y2="21" stroke="var(--navy-deep)" stroke-width="3"/></svg>
-          <span>Frame — structural steel</span>
-        </div>
-        <div class="legend-item">
-          <svg class="legend-swatch" width="26" height="26" viewBox="0 0 26 26"><rect x="1" y="1" width="24" height="24" fill="none" stroke="var(--steel-light)" stroke-width="1"/><line x1="3" y1="20" x2="13" y2="6" stroke="var(--steel)" stroke-width="1.3"/><line x1="10" y1="20" x2="20" y2="6" stroke="var(--steel)" stroke-width="1.3"/><line x1="17" y1="20" x2="24" y2="10" stroke="var(--steel)" stroke-width="1.3"/></svg>
-          <span>Foundation — concrete footing</span>
-        </div>
-      </div>
-
-      <div class="benefits-grid">
-        <div class="benefit">
-          <div class="benefit-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><line x1="12" y1="12" x2="12" y2="7.3"/><line x1="12" y1="12" x2="15.6" y2="13.6"/></svg></div>
-          <h3>Fast to erect</h3>
-          <p>Prefabricated steel sections and metal deck panels go up in weeks, shortening the time between foundation and handover.</p>
-        </div>
-        <div class="benefit">
-          <div class="benefit-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L18.5 5.8 V11 C18.5 15.6 15.7 18.8 12 20.5 C8.3 18.8 5.5 15.6 5.5 11 V5.8 Z"/><path d="M12 9.2 C12 9.2 9.8 12 9.8 13.7 C9.8 15 10.8 15.9 12 15.9 C13.2 15.9 14.2 15 14.2 13.7 C14.2 12 12 9.2 12 9.2 Z" fill="currentColor" stroke="none"/></svg></div>
-          <h3>Weather-tight</h3>
-          <p>Profiled metal deck sheds Mumbai's monsoon rain quickly, with sealed roof-to-wall junctions on all four elevations.</p>
-        </div>
-        <div class="benefit">
-          <div class="benefit-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="3.5" y1="12" x2="20.5" y2="12"/><polyline points="7,8.3 3.5,12 7,15.7"/><polyline points="17,8.3 20.5,12 17,15.7"/></svg></div>
-          <h3>Wide, column-free spans</h3>
-          <p>Structural steel portal frames clear-span the width of each warehouse floor, keeping the working area open.</p>
-        </div>
-        <div class="benefit">
-          <div class="benefit-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12,4 a8,8 0 1,1 -6.9,4"/><polyline points="2.6,4.5 5.1,8.4 9,6.3"/></svg></div>
-          <h3>Low maintenance</h3>
-          <p>Coated steel and deck panels are built to stand up to years of industrial use with minimal upkeep.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= PARTNERS ================= -->
-  <section class="partners" id="partners">
-    <div class="section-inner">
-      <h2>Our partners</h2>
-      <p class="partners-intro">We work with a trusted network of material and fabrication partners across the project.</p>
-      <div class="partners-grid">
-        <div class="partner-badge"><span class="badge-mono">CS</span><span class="name">Cold Square</span></div>
-        <div class="partner-badge"><span class="badge-mono">AP</span><span class="name">Apsara Plastic</span></div>
-        <div class="partner-badge"><span class="badge-mono">AL</span><span class="name">Adroit Legion</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= CONTACT ================= -->
-  <section class="contact" id="contact">
-    <div class="section-inner contact-grid">
-      <div class="contact-info">
-        <h2>Let's talk about your project</h2>
-        <p>Whether you're exploring warehouse space in the colony or looking to partner with us on materials and fabrication, we'd like to hear from you.</p>
-        <ul class="contact-details">
-          <li>Mumbai, Maharashtra, India</li>
-          <li>+91 90000 00000</li>
-          <li>info@ikdevelopers.in</li>
-        </ul>
-      </div>
-      <form class="contact-form" id="contactForm" novalidate>
-        <div class="form-row">
-          <label for="name">Name</label>
-          <input id="name" name="name" type="text" required>
-        </div>
-        <div class="form-row">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" required>
-        </div>
-        <div class="form-row">
-          <label for="phone">Phone</label>
-          <input id="phone" name="phone" type="tel">
-        </div>
-        <div class="form-row">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" rows="4" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Send message</button>
-        <p class="form-note" id="formNote" role="status"></p>
-      </form>
-    </div>
-  </section>
-
-</main>
-
-<footer class="site-footer">
-  <div class="footer-grid">
-    <div>
-      <img class="footer-logo" src="logo-light.png" alt="IK Developers Group">
-      <p>Building Mumbai's next industrial ground.</p>
-    </div>
-    <div>
-      <h4>Quick links</h4>
-      <a href="#about">About</a>
-      <a href="#project">Project</a>
-      <a href="#system">Construction system</a>
-      <a href="#partners">Partners</a>
-      <a href="#contact">Contact</a>
-    </div>
-    <div>
-      <h4>Contact</h4>
-      <p style="margin-bottom:8px;">Mumbai, Maharashtra, India</p>
-      <p style="margin-bottom:8px;">+91 90000 00000</p>
-      <p style="margin-bottom:0;">info@ikdevelopers.in</p>
-    </div>
+    <h4>Expense Logs</h4>
+    <table id="expenseTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Paid By</th>
+          <th>Item</th>
+          <th>Amount (KWD)</th>
+        </tr>
+      </thead>
+      <tbody id="expenseTableBody"></tbody>
+    </table>
   </div>
-  <div class="footer-bottom">
-    <p>© <span id="year"></span> IK Developers Group. All rights reserved.</p>
-  </div>
-</footer>
 
-<script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
