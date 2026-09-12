@@ -3,68 +3,778 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Room Expenses (KWD)</title>
+  <title>Roommate Expense Splitter (KWD)</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f7f6; }
-    .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    input, select, button { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
-    button { background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; }
-    .hidden { display: none; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      /* Professional Financial Background Image */
+      background: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.75)), 
+                  url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    /* Full-Screen Login Modal Overlay with Frosted Glass Effect */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .login-box {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 35px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .login-box h2 {
+      margin-top: 0;
+      color: #1e293b;
+      font-size: 24px;
+    }
+
+    /* Main Container */
+    .container {
+      background: rgba(255, 255, 255, 0.96);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 100%;
+      display: none;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: #1e293b;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+
+    .user-welcome-bar {
+      background-color: #e0f2fe;
+      border: 1px solid #bae6fd;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Inner Border Card Box for Add Expense */
+    .expense-card {
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+      margin-top: 10px;
+    }
+
+    .summary-box {
+      border: 2px solid #0284c7;
+      background-color: #f0f9ff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .summary-box p {
+      margin: 8px 0;
+      font-size: 18px;
+      color: #0f172a;
+    }
+
+    .summary-box strong {
+      color: #0369a1;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 15px;
+      background-color: #ffffff;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-group input {
+      flex: 1;
+    }
+
+    .input-group button {
+      width: auto;
+      white-space: nowrap;
+    }
+
+    button {
+      width: 100%;
+      background-color: #16a34a;
+      color: white;
+      border: none;
+      padding: 11px 14px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #15803d;
+    }
+
+    .btn-secondary {
+      background-color: #0284c7;
+    }
+
+    .btn-secondary:hover {
+      background-color: #0369a1;
+    }
+
+    .btn-danger {
+      background-color: #dc2626;
+    }
+
+    .btn-danger:hover {
+      background-color: #b91c1c;
+    }
+
+    .btn-warning {
+      background-color: #ea580c;
+    }
+
+    .btn-warning:hover {
+      background-color: #c2410c;
+    }
+
+    .btn-edit {
+      background-color: #eab308;
+      color: #1e293b;
+    }
+
+    .btn-edit:hover {
+      background-color: #ca8a04;
+    }
+
+    .btn-logout {
+      background-color: #64748b;
+      width: auto;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .btn-logout:hover {
+      background-color: #475569;
+    }
+
+    .roommate-tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .roommate-tag {
+      background-color: #f1f5f9;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 14px;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+
+    .expense-date-badge {
+      display: inline-block;
+      background-color: #e2e8f0;
+      color: #475569;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f8fafc;
+      margin-bottom: 10px;
+      padding: 12px;
+      border-left: 4px solid #0284c7;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      border-left-width: 4px;
+    }
+
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .expense-info {
+      flex: 1;
+    }
+
+    .expense-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .expense-actions button {
+      padding: 6px 10px;
+      font-size: 12px;
+      width: auto;
+    }
+
+    .settlement-item {
+      border-left-color: #16a34a;
+    }
+
+    .history-card {
+      background-color: #fef3c7;
+      border: 1px solid #fde68a;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    .error-msg {
+      color: #dc2626;
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN SECTION -->
-  <div id="loginSection" class="card">
-    <h2>Room Expense Login</h2>
-    <select id="userSelect">
-      <option value="">Select Your Name</option>
-      <option value="Amir Khan">Amir Khan</option>
-      <option value="Parvej">Parvej</option>
-      <option value="Meraj">Meraj</option>
-      <option value="Modassir">Modassir</option>
-      <option value="Rizwan">Rizwan</option>
-    </select>
-    <input type="password" id="passwordInput" placeholder="Enter Password">
-    <button onclick="login()">Login</button>
+  <!-- Individual Login Overlay -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-box">
+      <h2>Roommate Login</h2>
+      <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Select your name and enter your password</p>
+
+      <div class="form-group">
+        <label for="login-username">Select Name:</label>
+        <select id="login-username"></select>
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" placeholder="Enter password" onkeypress="handleKeyPress(event)">
+      </div>
+
+      <button onclick="verifyUserLogin()">Log In</button>
+      <div id="login-error" class="error-msg">Incorrect password for selected user!</div>
+    </div>
   </div>
 
-  <!-- MAIN APP SECTION -->
-  <div id="appSection" class="card hidden">
-    <h3>Welcome, <span id="currentUser"></span></h3>
-    <button onclick="logout()" style="background: #dc3545;">Logout</button>
-    <hr>
+  <!-- Main Application Container -->
+  <div id="app-container" class="container">
+    <div class="header-bar">
+      <h1 style="margin: 0; font-size: 20px;">Expense Splitter (KWD)</h1>
+      <button class="btn-logout" onclick="logout()">Log Out</button>
+    </div>
 
-    <h3>Add Expense</h3>
-    <input type="text" id="itemInput" placeholder="Item Name (e.g. Rice, Internet)">
-    <input type="number" step="0.001" id="amountInput" placeholder="Amount in KWD">
-    <input type="date" id="dateInput">
-    <button onclick="addExpense()">Submit Expense</button>
+    <!-- Active Authenticated User Banner -->
+    <div class="user-welcome-bar">
+      <div>Logged in as: <strong id="current-user-display" style="color: #0369a1; font-size: 18px;"></strong></div>
+    </div>
 
-    <hr>
-    <h3>Month-End Summary</h3>
-    <label for="monthFilter">Select Month:</label>
-    <input type="month" id="monthFilter" onchange="loadMonthlyExpenses()">
+    <!-- 1. Roommates Management -->
+    <div class="section">
+      <h2>1. Roommates</h2>
+      <div class="form-group">
+        <label for="new-roommate">Add New Person <small style="color: #64748b;">(Amir only)</small></label>
+        <div class="input-group">
+          <input type="text" id="new-roommate" placeholder="Enter name">
+          <input type="password" id="new-roommate-pass" placeholder="Set password">
+          <button class="btn-secondary" onclick="addRoommate()">Add</button>
+        </div>
+      </div>
+      <div>
+        <strong>Current Registered Roommates:</strong>
+        <div id="roommate-tags" class="roommate-tag-container"></div>
+      </div>
+    </div>
 
-    <div id="summaryResults"></div>
+    <!-- 2. Add Expense Form with Inner Border Card -->
+    <div class="section">
+      <h2>2. Add Expense</h2>
+      <div class="expense-card">
+        <div class="form-group">
+          <label for="description">Description (e.g., Rent, Groceries)</label>
+          <input type="text" id="description" placeholder="Enter description">
+        </div>
 
-    <h4>Expense Logs</h4>
-    <table id="expenseTable">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Paid By</th>
-          <th>Item</th>
-          <th>Amount (KWD)</th>
-        </tr>
-      </thead>
-      <tbody id="expenseTableBody"></tbody>
-    </table>
+        <div class="form-group">
+          <label for="amount">Amount (KWD)</label>
+          <input type="number" id="amount" placeholder="0.000" step="0.001">
+        </div>
+
+        <button onclick="addExpense()">Add Expense</button>
+      </div>
+    </div>
+
+    <!-- 3. Current Month Summary & Log -->
+    <div class="section">
+      <h2>3. Current Month Summary</h2>
+      
+      <div class="summary-box">
+        <p><strong>Total Spent:</strong> <span id="total-spent">0.000</span> KWD</p>
+        <p><strong>Fair Share per Person:</strong> <span id="fair-share">0.000</span> KWD</p>
+      </div>
+
+      <h3>Expenses Log</h3>
+      <ul id="expense-list"></ul>
+    </div>
+
+    <!-- 4. Settlements -->
+    <div class="section">
+      <h2>4. Final Settlements</h2>
+      <ul id="settlement-list">
+        <li>No expenses added yet.</li>
+      </ul>
+      <br>
+      <button class="btn-warning" onclick="archiveCurrentMonth()">Close & Save Current Month</button>
+    </div>
+
+    <!-- 5. History Archive -->
+    <div>
+      <h2>5. History Archive</h2>
+      <div class="form-group">
+        <label for="history-select">Select Month to View History:</label>
+        <select id="history-select" onchange="loadHistoryMonth()">
+          <option value="">-- Select Month --</option>
+        </select>
+      </div>
+      <div id="history-display"></div>
+    </div>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    // Default Accounts Object
+    const defaultAccounts = {
+      "Amir": "amir955956",
+      "Meraj": "meraj1234",
+      "Rizwan": "rizwan12345",
+      "Moddassir": "moddassir123456",
+      "Parvej": "parvej1234567"
+    };
+
+    // Load or initialize user accounts
+    let userAccounts = JSON.parse(localStorage.getItem('userAccounts')) || defaultAccounts;
+    let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+    let historyRecords = JSON.parse(localStorage.getItem('historyRecords')) || {};
+    let activeUser = sessionStorage.getItem('activeUser') || "";
+
+    populateLoginDropdown();
+    checkAuthStatus();
+
+    function saveData() {
+      localStorage.setItem('userAccounts', JSON.stringify(userAccounts));
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+      localStorage.setItem('historyRecords', JSON.stringify(historyRecords));
+    }
+
+    function populateLoginDropdown() {
+      const select = document.getElementById('login-username');
+      select.innerHTML = '';
+      Object.keys(userAccounts).forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    }
+
+    function checkAuthStatus() {
+      if (activeUser && userAccounts[activeUser]) {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('current-user-display').textContent = activeUser;
+        renderRoommates();
+        populateHistoryDropdown();
+        updateUI();
+      } else {
+        document.getElementById('login-overlay').style.display = 'flex';
+        document.getElementById('app-container').style.display = 'none';
+      }
+    }
+
+    function verifyUserLogin() {
+      const selectedName = document.getElementById('login-username').value;
+      const inputPass = document.getElementById('login-password').value;
+      const errorMsg = document.getElementById('login-error');
+
+      if (userAccounts[selectedName] && userAccounts[selectedName] === inputPass) {
+        activeUser = selectedName;
+        sessionStorage.setItem('activeUser', activeUser);
+        errorMsg.style.display = 'none';
+        document.getElementById('login-password').value = '';
+        checkAuthStatus();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        verifyUserLogin();
+      }
+    }
+
+    function logout() {
+      sessionStorage.removeItem('activeUser');
+      activeUser = "";
+      checkAuthStatus();
+    }
+
+    // Restricted Function: Only 'Amir' can add roommates
+    function addRoommate() {
+      if (activeUser !== "Amir") {
+        alert("Permission Denied: Only Amir has access to add a new person.");
+        return;
+      }
+
+      const nameInput = document.getElementById("new-roommate");
+      const passInput = document.getElementById("new-roommate-pass");
+      const name = nameInput.value.trim();
+      const pass = passInput.value.trim();
+
+      if (!name || !pass) {
+        alert("Please enter both a name and a password for the new roommate.");
+        return;
+      }
+
+      if (userAccounts[name]) {
+        alert(`${name} is already registered!`);
+        return;
+      }
+
+      userAccounts[name] = pass;
+      nameInput.value = "";
+      passInput.value = "";
+
+      saveData();
+      populateLoginDropdown();
+      renderRoommates();
+      updateUI();
+      alert(`Success: ${name} added to roommates list!`);
+    }
+
+    function renderRoommates() {
+      const tagsContainer = document.getElementById("roommate-tags");
+      tagsContainer.innerHTML = "";
+
+      Object.keys(userAccounts).forEach(name => {
+        const tag = document.createElement("span");
+        tag.className = "roommate-tag";
+        tag.textContent = name;
+        tagsContainer.appendChild(tag);
+      });
+    }
+
+    function getFormattedDate() {
+      const now = new Date();
+      
+      const day = String(now.getDate()).padStart(2, '0');
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = monthNames[now.getMonth()];
+      const year = now.getFullYear();
+
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const formattedHours = String(hours).padStart(2, '0');
+
+      return `${day} ${month} ${year}, ${formattedHours}:${minutes} ${ampm}`;
+    }
+
+    function addExpense() {
+      const description = document.getElementById("description").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value);
+
+      if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid amount in KWD greater than 0.");
+        return;
+      }
+
+      const newExpense = {
+        id: Date.now(),
+        payer: activeUser,
+        description: description || "Expense",
+        amount: amount,
+        date: getFormattedDate()
+      };
+
+      expenses.push(newExpense);
+
+      document.getElementById("description").value = "";
+      document.getElementById("amount").value = "";
+
+      saveData();
+      updateUI();
+    }
+
+    function editDescription(id) {
+      const expense = expenses.find(item => item.id === id);
+      if (!expense) return;
+
+      if (expense.payer !== activeUser && activeUser !== "Amir") {
+        alert(`Permission Denied: Only ${expense.payer} or Amir can edit this entry.`);
+        return;
+      }
+
+      const newDesc = prompt("Edit description:", expense.description);
+      if (newDesc !== null && newDesc.trim() !== "") {
+        expense.description = newDesc.trim();
+        saveData();
+        updateUI();
+      }
+    }
+
+    // Delete Function with Admin Permission Override
+    function deleteExpense(id) {
+      const expenseIndex = expenses.findIndex(item => item.id === id);
+      if (expenseIndex === -1) return;
+
+      const expense = expenses[expenseIndex];
+
+      if (expense.payer !== activeUser && activeUser !== "Amir") {
+        alert(`Permission Denied: Only ${expense.payer} or Amir can delete this entry.`);
+        return;
+      }
+
+      if (confirm(`Are you sure you want to delete "${expense.description}" (${expense.amount.toFixed(3)} KWD)?`)) {
+        expenses.splice(expenseIndex, 1);
+        saveData();
+        updateUI();
+      }
+    }
+
+    function updateUI() {
+      const expenseListUI = document.getElementById("expense-list");
+      const settlementListUI = document.getElementById("settlement-list");
+      
+      const roommatesList = Object.keys(userAccounts);
+      let totalSpent = 0;
+      const totalPaid = {};
+      roommatesList.forEach(name => totalPaid[name] = 0);
+
+      expenseListUI.innerHTML = "";
+
+      if (expenses.length === 0) {
+        expenseListUI.innerHTML = "<li>No expenses recorded yet for this month.</li>";
+      }
+
+      expenses.forEach(exp => {
+        totalSpent += exp.amount;
+        if (totalPaid[exp.payer] !== undefined) {
+          totalPaid[exp.payer] += exp.amount;
+        }
+
+        const li = document.createElement("li");
+        
+        const canEditOrDelete = (exp.payer === activeUser || activeUser === "Amir");
+
+        li.innerHTML = `
+          <div class="expense-item">
+            <div class="expense-info">
+              <span class="expense-date-badge">📅 ${exp.date || 'N/A'}</span><br>
+              <strong>${exp.payer}</strong> paid <strong>${exp.amount.toFixed(3)} KWD</strong>
+              <br><small>Desc: ${exp.description}</small>
+            </div>
+            <div class="expense-actions">
+              ${canEditOrDelete ? `<button class="btn-edit" onclick="editDescription(${exp.id})">Edit</button>` : ''}
+              ${canEditOrDelete ? `<button class="btn-danger" onclick="deleteExpense(${exp.id})">Delete</button>` : ''}
+            </div>
+          </div>
+        `;
+        expenseListUI.appendChild(li);
+      });
+
+      const fairShare = roommatesList.length > 0 ? totalSpent / roommatesList.length : 0;
+
+      document.getElementById("total-spent").textContent = totalSpent.toFixed(3);
+      document.getElementById("fair-share").textContent = fairShare.toFixed(3);
+
+      const balances = {};
+      roommatesList.forEach(name => {
+        balances[name] = totalPaid[name] - fairShare;
+      });
+
+      const debtors = [];
+      const creditors = [];
+
+      for (const name in balances) {
+        if (balances[name] < -0.001) {
+          debtors.push({ name: name, amount: -balances[name] });
+        } else if (balances[name] > 0.001) {
+          creditors.push({ name: name, amount: balances[name] });
+        }
+      }
+
+      settlementListUI.innerHTML = "";
+      let d = 0, c = 0;
+
+      if (expenses.length === 0) {
+        settlementListUI.innerHTML = "<li>No expenses added yet.</li>";
+        return;
+      }
+
+      if (debtors.length === 0 && creditors.length === 0) {
+        settlementListUI.innerHTML = "<li>Everyone is settled up!</li>";
+        return;
+      }
+
+      while (d < debtors.length && c < creditors.length) {
+        const settleAmount = Math.min(debtors[d].amount, creditors[c].amount);
+        
+        const li = document.createElement("li");
+        li.className = "settlement-item";
+        li.textContent = `${debtors[d].name} pays ${creditors[c].name} ${settleAmount.toFixed(3)} KWD`;
+        settlementListUI.appendChild(li);
+
+        debtors[d].amount -= settleAmount;
+        creditors[c].amount -= settleAmount;
+
+        if (debtors[d].amount < 0.001) d++;
+        if (creditors[c].amount < 0.001) c++;
+      }
+    }
+
+    function archiveCurrentMonth() {
+      if (expenses.length === 0) {
+        alert("No expenses to archive for this month!");
+        return;
+      }
+
+      const defaultMonthKey = new Date().toISOString().slice(0, 7);
+      const monthKey = prompt("Enter Month & Year tag (YYYY-MM):", defaultMonthKey);
+
+      if (!monthKey) return;
+
+      const totalSpent = parseFloat(document.getElementById("total-spent").textContent);
+      const fairShare = parseFloat(document.getElementById("fair-share").textContent);
+
+      historyRecords[monthKey] = {
+        dateArchived: new Date().toLocaleString(),
+        totalSpent: totalSpent,
+        fairShare: fairShare,
+        expenses: [...expenses]
+      };
+
+      expenses = [];
+      saveData();
+      populateHistoryDropdown();
+      updateUI();
+
+      alert(`Month ${monthKey} archived successfully!`);
+    }
+
+    function populateHistoryDropdown() {
+      const select = document.getElementById("history-select");
+      select.innerHTML = '<option value="">-- Select Month --</option>';
+
+      Object.keys(historyRecords).sort().reverse().forEach(key => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = key;
+        select.appendChild(option);
+      });
+    }
+
+    function loadHistoryMonth() {
+      const selectedKey = document.getElementById("history-select").value;
+      const display = document.getElementById("history-display");
+
+      if (!selectedKey || !historyRecords[selectedKey]) {
+        display.innerHTML = "";
+        return;
+      }
+
+      const record = historyRecords[selectedKey];
+      let itemsList = record.expenses.map(exp => 
+        `<li><small>[${exp.date || 'N/A'}]</small> <strong>${exp.payer}</strong>: ${exp.amount.toFixed(3)} KWD (${exp.description})</li>`
+      ).join('');
+
+      display.innerHTML = `
+        <div class="history-card">
+          <h3>Record for ${selectedKey}</h3>
+          <p><small>Archived on: ${record.dateArchived}</small></p>
+          <p><strong>Total Spent:</strong> ${record.totalSpent.toFixed(3)} KWD</p>
+          <p><strong>Fair Share per Person:</strong> ${record.fairShare.toFixed(3)} KWD</p>
+          <h4>Archived Expenses Log:</h4>
+          <ul>${itemsList}</ul>
+        </div>
+      `;
+    }
+  </script>
 </body>
 </html>
