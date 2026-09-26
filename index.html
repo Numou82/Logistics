@@ -2,6 +2,75 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AC Maintenance - Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">CoolCare Maintenance</div>
+    <div class="badge">Dispatch Center</div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Log an AC Complaint</h2>
+      <p class="subtitle">Submit issue details to dispatch a technician directly to your location.</p>
+
+      <form id="complaintForm">
+        <div class="form-group">
+          <label for="location">Select Location / Site Code (300 Locations)</label>
+          <select id="location" required>
+            <option value="">-- Choose Location --</option>
+            <option value="LOC-001">LOC-001 | HQ Main Building</option>
+            <option value="LOC-002">LOC-002 | West Wing Branch</option>
+            <option value="LOC-003">LOC-003 | Warehouse B</option>
+            <!-- Add remaining location codes here -->
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reportedBy">Your Name</label>
+            <input type="text" id="reportedBy" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label for="contact">Phone Number</label>
+            <input type="tel" id="contact" placeholder="+1234567890" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="issueType">Issue Category</label>
+          <select id="issueType" required>
+            <option value="">-- Select Issue --</option>
+            <option value="no-cooling">AC Not Cooling</option>
+            <option value="water-leak">Water Leakage</option>
+            <option value="strange-noise">Loud Noise / Vibration</option>
+            <option value="power-off">Unit Won't Turn On</option>
+            <option value="other">Other Maintenance</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Issue Details</label>
+          <textarea id="description" rows="4" placeholder="Describe the problem, unit number, room name, etc." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Submit Ticket</button>
+      </form>
+      
+      <div id="statusMessage" class="status-msg hidden"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
   <title>Submit AC Complaint</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
